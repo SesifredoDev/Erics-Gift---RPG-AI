@@ -25,7 +25,7 @@ export class GameService {
 
 
 
-  gameState: any;
+  gameState?: any;
   inventory: Subject<IItem[]> = new Subject;
 
   constructor() { 
@@ -42,8 +42,8 @@ export class GameService {
           console.log(this.game)
           if(this.game.length <=0) throw new Error("No game data found");  // or return default game state if no data is available
           // Or return a default game state
-
-          this.gameState = localStorage.getItem("gameState");
+          let gameStateTemp: string = String(localStorage.getItem("gameState"))
+          this.gameState = JSON.parse( gameStateTemp );
 
           if(!this.gameState) this.gameState = {
               currentStory: 0,
@@ -83,19 +83,34 @@ export class GameService {
   loadNextScene(id:number): IStory| ICombat{
     let result: IStory | ICombat | undefined;
     result =  this.game.find(story=>story.id == id);
-    if(!result) return {
+    if(!result) return  {
       "id": 0,
       "title": "Empty Story Block",
       "pathway": "A blank moment in Darryn's journey.",
       "description": "This block is intentionally left blank for future use.",
       "items": [],
-      "options": []
+      "options": [{
+        "name": "start",
+        "description": "Start Darryn's adventure",
+        "collectedItems": [],
+        "targetStoryBlock": 1
+      },]
     }
+    this.gameState.currentStory = result.id;
+    this.saveGameState();
     return result;
   }
 
   saveGameState(){
     localStorage.setItem("gameState", JSON.stringify(this.gameState));
+  }
+
+  resetGame(){
+    localStorage.removeItem("gameState");
+    this.gameState = undefined;
+    this.inventory.next([]);
+    this.game = [];
+    this.items = [];
   }
 
 

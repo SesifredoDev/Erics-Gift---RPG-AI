@@ -1,7 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title> Game</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="secondary" (click)="resetGame()"><ion-icon name="refresh-outline" slot="start"></ion-icon> Reset</ion-button>
+    </ion-buttons>
   </ion-toolbar>
+  
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -25,7 +29,10 @@
   </ion-card>
 
   <!-- Options  -->
-  <ion-item *ngFor="let option of storyBlock.options" (click)="onOptionSelected(option.targetStoryBlock)">
-    {{option.name}} - {{option.description}}
-  </ion-item>
+   <div *ngIf="!storyBlock.isCombat">
+      <ion-item *ngFor="let option of storyBlock.options" (click)="onOptionSelected(option.targetStoryBlock)">
+        {{option.name}} - {{option.description}}
+      </ion-item>
+   </div>
+  
 </ion-content>

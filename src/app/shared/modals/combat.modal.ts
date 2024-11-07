@@ -9,6 +9,6 @@ export interface IEnemy{
 	id: number;
 	AC: number; //armour class
 	weapons: IItem[]; // items must have isWeapon be true
-	health: number;
-	
+	health: number
 }
+

@@ -12,7 +12,7 @@ import { CombatComponent } from '../combat/combat.component';
 })
 export class HomePage implements OnInit {
   activateOptions:boolean = false;
-  storyBlock: IStory | ICombat = {
+  storyBlock: any = {
     "id": 0,
     "title": "Empty Story Block",
     "pathway": "A blank moment in Darryn's journey.",
@@ -27,13 +27,15 @@ export class HomePage implements OnInit {
   };
 
   displayedText: string = ''; // Variable to store the displayed text
-  typingSpeed: number = 50; // Speed of typing in milliseconds
+  typingSpeed: number = 25; // Speed of typing in milliseconds
 
   constructor(private gameService: GameService, public modalController: ModalController) { }
 
-  ngOnInit() {
-    this.gameService.intialiseGame();
-    this.showStoryBlock(this.storyBlock); // Show the initial story block
+  async ngOnInit() {
+    
+    await this.gameService.intialiseGame();
+    let intialisedStoryBlock = this.gameService.loadNextScene(this.gameService.gameState.currentStory)
+    this.showStoryBlock(intialisedStoryBlock); // Show the initial story block
   }
 
   showStoryBlock(storyBlock: IStory) {
@@ -52,6 +54,13 @@ export class HomePage implements OnInit {
         setTimeout(type, this.typingSpeed);
       }else{
         this.activateOptions = true;
+        
+        if(this.storyBlock?.isCombat){
+          setTimeout(()=>{
+            this.openCombat(this.storyBlock);
+          }, 1000)
+          return;
+        }
       }
     };
     await type();
@@ -61,10 +70,6 @@ export class HomePage implements OnInit {
   onOptionSelected(option: number) {
     if(this.activateOptions){
       let newScene: any =  this.gameService.loadNextScene(option);
-      if(newScene?.isCombat){
-        this.openCombat(newScene);
-        return;
-      }
       this.storyBlock = newScene;
       this.showStoryBlock(this.storyBlock); // Trigger typing animation for the new story block
     }
@@ -79,4 +84,13 @@ export class HomePage implements OnInit {
     await modal.present();
     modal.onDidDismiss().then((data: any) =>{console.log(data)})
   }
+
+
+
+  // Reset Game
+  resetGame(){
+    this.gameService.resetGame();
+    this.ngOnInit(); // Reload the page to start a new game
+  }
+
 }

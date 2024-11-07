@@ -1,3 +1,24 @@
-<p>
-  combat works!
-</p>
+
+<ion-card>
+    <ion-card-content>
+        <img src="assets/darryn.png" alt="">
+        <div>
+            <p color="warning">Enemy Health: 100</p>
+            <p color="success">Player Health: 100</p>
+        </div>
+        <div>
+            <ion-item (click)="attack()">Attack</ion-item>
+            <ion-item (click)="dodge()" >Dodge</ion-item>
+            <ion-item (click)="inventory()">Inventory</ion-item>
+        </div>
+
+        <div *ngIf="false">
+            <!-- attack options -->
+        </div>
+        <div *ngIf="false">
+            <!-- inventory options -->
+        </div>
+        
+    </ion-card-content>
+</ion-card>
+
