@@ -14,4 +14,4 @@ export interface IOption{
 	description: string; //short description;
     collectedItems?: IItem[];
 	targetStoryBlock: number; //Target IStoryBlock or ICombat
-}
+} 
