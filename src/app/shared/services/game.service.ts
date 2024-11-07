@@ -37,6 +37,7 @@ export class GameService {
     // For example, load saved game state from local storage
     // or create a new game with default settings
     try{
+      
         await fetch("assets/game.json").then(res=>res.json()).then(json=>{
           this.game = json
           console.log(this.game)
@@ -103,6 +104,7 @@ export class GameService {
 
   saveGameState(){
     localStorage.setItem("gameState", JSON.stringify(this.gameState));
+    // localStorage.setItem("playerState", JSON.stringify(this.playerStats));
   }
 
   resetGame(){
@@ -122,6 +124,8 @@ export class GameService {
         //DO YOUR STAFF
     });
   }
+
+
 
 
 }
