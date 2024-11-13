@@ -5,6 +5,7 @@ import { ModalController } from '@ionic/angular';
 import { ICombat } from '../shared/modals/combat.modal';
 import { CombatComponent } from '../combat/combat.component';
 
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -32,8 +33,8 @@ export class HomePage implements OnInit {
   constructor(private gameService: GameService, public modalController: ModalController) { }
 
   async ngOnInit() {
+    await this.gameService.intialiseGame(); // Initialise the game state if not already done
     
-    await this.gameService.intialiseGame();
     let intialisedStoryBlock = this.gameService.loadNextScene(this.gameService.gameState.currentStory)
     this.showStoryBlock(intialisedStoryBlock); // Show the initial story block
   }
@@ -54,14 +55,7 @@ export class HomePage implements OnInit {
         setTimeout(type, this.typingSpeed);
       }else{
         this.activateOptions = true;
-        
-        if(this.storyBlock?.isCombat){
-          setTimeout(()=>{
-            this.openCombat(this.storyBlock);
-          }, 1000)
-          return;
         }
-      }
     };
     await type();
     
@@ -79,7 +73,8 @@ export class HomePage implements OnInit {
   async openCombat(combatBlock: ICombat){
     const modal = await this.modalController.create({
       component: CombatComponent,
-      componentProps: { combatBlock }
+      componentProps: { combatBlock },
+      cssClass: 'combat-modal'
     });
     await modal.present();
     modal.onDidDismiss().then((data: any) =>{console.log(data)})

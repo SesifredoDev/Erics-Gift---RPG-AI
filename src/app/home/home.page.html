@@ -34,5 +34,8 @@
         {{option.name}} - {{option.description}}
       </ion-item>
    </div>
+   <div *ngIf="storyBlock.isCombat">
+      <ion-item (click)="openCombat(storyBlock);"> Start Combat ⚔️</ion-item>
+   </div>
   
 </ion-content>

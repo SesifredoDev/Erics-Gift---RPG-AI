@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { GameService } from '../shared/services/game.service';
 
 @Component({
   selector: 'app-inventory',
@@ -6,10 +7,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./inventory.page.scss'],
 })
 export class InventoryPage implements OnInit {
+  inventory: any[] = [];;
 
-  constructor() { }
+  constructor(private gameService: GameService) { }
 
   ngOnInit() {
-  }
+    this.gameService.getInventory().subscribe((inventory) => {
+      this.inventory = inventory;
+      
+    });
+    this.gameService.initInventory();
 
+  }
 }

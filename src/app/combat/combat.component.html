@@ -1,24 +1,43 @@
 
-<ion-card>
-    <ion-card-content>
-        <img src="assets/darryn.png" alt="">
-        <div>
-            <p color="warning">Enemy Health: 100</p>
-            <p color="success">Player Health: 100</p>
-        </div>
-        <div>
-            <ion-item (click)="attack()">Attack</ion-item>
-            <ion-item (click)="dodge()" >Dodge</ion-item>
-            <ion-item (click)="inventory()">Inventory</ion-item>
-        </div>
-
-        <div *ngIf="false">
-            <!-- attack options -->
-        </div>
-        <div *ngIf="false">
-            <!-- inventory options -->
-        </div>
+<div class="combat-container">
+    
+    <ion-card class="player-info">
+        <ion-card-content>
+            <img src="assets/darryn.png" alt="">
+            
+            <p>Health: {{player.health}}</p>
+            <p>AC: {{player.AC}}</p>
+            <p>STR: {{player.strength}}</p>
+            
+            <p>CON: {{player.constitution}}</p>
+            
+            <p>DEX: {{player.dexterity}}</p>
+            
+            <p>INT: {{player.intelligence}}</p>
+            
+            <p>WIS: {{player.wisdom}}</p>
+            
+        </ion-card-content>
+    </ion-card>
+    <ion-card class="combat-details">
+        <ion-card-content>
+            <div>
+                <p color="warning">Enemy Health: 100</p>
+                <p color="success">Player Health: 100</p>
+            </div>
+             
+        </ion-card-content>
+    </ion-card>
+</div>
+<div class="option-container">
+    <div class="main-options">
+        <ion-item (click)="getAttacks()">Attack</ion-item> 
+        <ion-item (click)="dodge()" >Dodge</ion-item>
+        <ion-item (click)="getInventory()">Inventory</ion-item>    
+    </div>
+    <div class="sub-options">
         
-    </ion-card-content>
-</ion-card>
+        <ion-item (click)="attack(option)" *ngFor="let option of options">{{option.name}}</ion-item>= 
+    </div>
+</div>
 

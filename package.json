@@ -13,6 +13,7 @@
   },
   "private": true,
   "dependencies": {
+    "@ai-sdk/openai": "^0.0.72",
     "@angular/animations": "^18.2.7",
     "@angular/common": "^18.2.7",
     "@angular/compiler": "^18.2.7",
@@ -27,6 +28,7 @@
     "@capacitor/keyboard": "6.0.2",
     "@capacitor/status-bar": "6.0.1",
     "@ionic/angular": "^8.0.0",
+    "ai": "^3.4.33",
     "electron": "^32.1.2",
     "ionicons": "^7.0.0",
     "ngx-electron": "^2.2.0",

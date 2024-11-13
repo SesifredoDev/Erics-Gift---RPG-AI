@@ -2,6 +2,48 @@
     color: white;
     
 }
+.combat-modal{
+    --width: 80vw;
+  }
+    
 pre{
     font-size: 0.05rem;
+}
+img{
+    height: 30%;
+}
+.combat-container{
+    display: flex;
+    height: 70%;
+    margin: auto;
+
+}
+
+.combat-container ion-card{
+    height: 100%;
+}
+
+.player-info{
+    width: 20%;
+}
+.combat-details{
+    width: 75%;
+    height: 100%;
+    margin-left: 10px;
+    background-color: #121212;
+}
+.option-container{
+    height: 30%;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+.sub-options{
+    display: ruby;
+}
+
+.sub-options *{
+    height: min-content;
+    width: 30%;
+    margin: 2.5px;
 }

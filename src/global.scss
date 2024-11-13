@@ -98,3 +98,14 @@ ion-toolbar {
     font-size: 18px;
     text-shadow: 1px 1px #d4a76a; /* Light gold shadow on toolbar text */
 }
+.combat-modal{
+    --width: 80vw;
+    --height: 720px
+  }
+
+@media only screen and (max-width: 768px) {
+    .combat-modal{
+        --width: 100vw;
+        --height: 100vh;
+    }
+}

@@ -12,6 +12,8 @@ export class GameService {
   game: IStory[] =  [];
   items: IItem[] = [];
 
+  inventory: Subject<IItem[]> = new Subject;
+
   defaultPlayerStats= {
     health: 100,
     AC: 13,
@@ -20,13 +22,17 @@ export class GameService {
     constitution: 10,
     intelligence: 12,
     wisdom: 12,
+
   }
+
+  player: any;
+
+
 
 
 
 
   gameState?: any;
-  inventory: Subject<IItem[]> = new Subject;
 
   constructor() { 
 
@@ -48,15 +54,70 @@ export class GameService {
 
           if(!this.gameState) this.gameState = {
               currentStory: 0,
-              inventory: [],
+              inventory: [
+                {
+                  "id": 1,
+                  "name": "Iron Dagger",
+                  "description": "A standard iron dagger, durable and practical. Its blade is well-balanced, suitable for quick strikes and close combat.",
+                  "image": "🔪",
+                  "bonuses": [],
+                  "damage": 3,
+                  "bonus": 0,
+                  "isWeapon": true
+                },
+                {
+                  "id": 2,
+                  "name": "Rusty Blade",
+                  "description": "An old, slightly corroded dagger. Its edge is worn, but it can still deal a respectable cut in a pinch.",
+                  "image": "🪓",
+                  "bonuses": [],
+                  "damage": 2,
+                  "bonus": 0,
+                  "isWeapon": true
+                },
+                {
+                  "id": 3,
+                  "name": "Steel Stiletto",
+                  "description": "A slim, sharp dagger forged from steel, designed for piercing armor and precision strikes.",
+                  "image": "🗡️",
+                  "bonuses": [{ "name": "Armor Penetration", "bonus": 1 }],
+                  "damage": 3,
+                  "bonus": 1,
+                  "isWeapon": true
+                },
+                {
+                  "id": 4,
+                  "name": "Balanced Dagger",
+                  "description": "A well-balanced dagger, ideal for throwing. Its aerodynamic design allows for controlled and accurate throws.",
+                  "image": "🔪",
+                  "bonuses": [{ "name": "Throwing Accuracy", "bonus": 1 }],
+                  "damage": 3,
+                  "bonus": 0,
+                  "isWeapon": true
+                },
+                {
+                  "id": 5,
+                  "name": "Shortblade",
+                  "description": "A compact dagger, easy to conceal and quick to draw. Useful for stealthy attacks and close quarters.",
+                  "image": "🗡️",
+                  "bonuses": [{ "name": "Stealth Bonus", "bonus": 1 }],
+                  "damage": 3,
+                  "bonus": 0,
+                  "isWeapon": true
+                }
+              ]
+              ,
               playerStats:this.defaultPlayerStats,
           };
 
-          this.inventory.next(this.gameState.inventory);
+          if(!this.gameState.playerStats) this.player = this.defaultPlayerStats;
+          if(!this.player) this.player = this.gameState.playerStats;
+
+          this.inventory.next(this.gameState.inventory); 
           localStorage.setItem("gameState", JSON.stringify(this.gameState));
 
           return this.gameState
-          
+        
         
           //DO YOUR STAFF
         });
@@ -69,13 +130,25 @@ export class GameService {
     }
   }
 
+
+  initInventory(){
+    this.inventory.next(this.gameState.inventory);
+    this.saveGameState();  // Save the updated inventory to local storage
+  }
+
+  getPlayer(){
+    return this.player;
+  }
+
   getInventory(){
+    return this.inventory;
+  }
+
+  getCurrentInventory(){
     return this.gameState.inventory;
   }
 
-  addItem(id: number){
-    let item = this.items.find(item=>item.id === id);
-    if(!item) return;
+  addItem(item: IItem){
     this.gameState.inventory.push(item);
     this.inventory.next(this.gameState.inventory);
     this.saveGameState(); 

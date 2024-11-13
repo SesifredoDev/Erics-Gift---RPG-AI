@@ -1,4 +1,4 @@
-import { IItem } from "./item.modal";
+import { IItem, IWeapon } from "./item.modal";
 import { IStory } from "./story.modal";
 
 export interface ICombat extends IStory{
@@ -6,9 +6,11 @@ export interface ICombat extends IStory{
     enemies: IEnemy[];
 }
 export interface IEnemy{
+	name: string;
 	id: number;
 	AC: number; //armour class
-	weapons: IItem[]; // items must have isWeapon be true
-	health: number
+	weapons: any[]; // items must have isWeapon be true
+	health: number;
+	description: string;
 }
 
