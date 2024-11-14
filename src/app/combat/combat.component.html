@@ -25,6 +25,9 @@
                 <p color="warning">Enemy Health: 100</p>
                 <p color="success">Player Health: 100</p>
             </div>
+            <div *ngFor="let item of loadedText">
+                <p>{{item}}</p>
+            </div>
              
         </ion-card-content>
     </ion-card>
