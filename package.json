@@ -13,6 +13,7 @@
   },
   "private": true,
   "dependencies": {
+    "@3d-dice/theme-blue-green-metal": "^0.2.0",
     "@ai-sdk/openai": "^0.0.72",
     "@angular/animations": "^18.2.7",
     "@angular/common": "^18.2.7",
@@ -36,10 +37,11 @@
     "package.json": "^2.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "unlimited-ai": "^2.0.2",
+    "unlimited-ai": "^3.0.0",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {
+    "@3d-dice/dice-box": "1.1",
     "@angular-devkit/build-angular": "^18.2.7",
     "@angular-eslint/builder": "^18.0.0",
     "@angular-eslint/eslint-plugin": "^18.0.0",

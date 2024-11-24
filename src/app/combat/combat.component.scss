@@ -31,6 +31,14 @@ img{
     height: 100%;
     margin-left: 10px;
     background-color: #121212;
+    font-size: small;
+    overflow-y: scroll;
+}
+.description-block{
+    height: 100%;
+}
+p{
+    font-size: 0.77rem;
 }
 .option-container{
     height: 30%;
@@ -46,4 +54,9 @@ img{
     height: min-content;
     width: 30%;
     margin: 2.5px;
+}
+@media screen and (max-width: 768px){
+    .sub-options *{
+        width: 45%;
+    }
 }

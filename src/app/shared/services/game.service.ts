@@ -16,22 +16,17 @@ export class GameService {
 
   defaultPlayerStats= {
     health: 100,
-    AC: 13,
-    strength: 16,
-    dexterity: 14,
-    constitution: 10,
-    intelligence: 12,
-    wisdom: 12,
+    AC: 15,
+    strength: 12,
+    dexterity: 16,
+    constitution: 15,
+    intelligence: 16,
+    wisdom: 8,
+    charisma: 12,
 
   }
 
   player: any;
-
-
-
-
-
-
   gameState?: any;
 
   constructor() { 
@@ -100,6 +95,17 @@ export class GameService {
                   "name": "Shortblade",
                   "description": "A compact dagger, easy to conceal and quick to draw. Useful for stealthy attacks and close quarters.",
                   "image": "🗡️",
+                  "bonuses": [{ "name": "Stealth Bonus", "bonus": 1 }],
+                  "damage": 3,
+                  "bonus": 0,
+                  "isWeapon": true
+                },
+                
+                {
+                  "id": 5,
+                  "name": "Derringer",
+                  "description": " A small, finely crafted hand crossbow designed for quick and stealthy use. Its darkwood frame is reinforced with polished steel, and the grip bears faint arcane runes that shimmer in low light. It can fire specially crafted bolts up to 30 feet with surprising precision. While not as powerful as a standard crossbow, its portability and ease of concealment make it a favorite among rogues and spies.",
+                  "image": "🔫",
                   "bonuses": [{ "name": "Stealth Bonus", "bonus": 1 }],
                   "damage": 3,
                   "bonus": 0,

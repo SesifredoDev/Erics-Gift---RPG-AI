@@ -23,6 +23,10 @@
       "es2018", 
       "dom"
     ],
+
+    "typeRoots": ["node_modules/@types", "src/types"],
+
+    "skipLibCheck": true,
     "useDefineForClassFields": false
   },
   "angularCompilerOptions": {

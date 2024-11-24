@@ -27,18 +27,18 @@
     "description": "As Darryn steps onto the creaking deck, the air grows cold, and a chilling breeze sweeps through. The ghostly crew turns, their hollow eyes fixating on Darryn. A spectral captain, adorned in tattered regalia, steps forward, brandishing a gleaming cutlass. 'You dare board my ship?' he hisses, the crew circling Darryn with malicious intent.",
     "items": [],
     "isCombat": true,
-    "enemies": [
+    "enemies":[
       {
         "id": 1,
         "name": "Ghostly Sailor",
+        "description": "A translucent, spectral figure clad in tattered sailor garb. The Ghostly Sailor’s hollow eyes glow faintly with a pale light, and its movements are unnaturally smooth, as though gliding through the air. It wields a weapon shimmering with ghostly energy, its presence chilling to the bone.",
         "AC": 12,
         "weapons": [
           {
             "id": 101,
             "name": "Spectral Cutlass",
-            "description": "A ghostly blade that glows with ethereal light.",
+            "description": "A ghostly blade that glows with ethereal light. It slices through flesh as easily as it disrupts the spirit.",
             "image": "⚔️",
-            "bonuses": [],
             "damage": 6,
             "bonus": 2,
             "isWeapon": true
@@ -49,14 +49,14 @@
       {
         "id": 2,
         "name": "Haunted Gunner",
+        "description": "A phantasmal figure dressed in the remnants of a naval uniform, the Haunted Gunner is perpetually surrounded by a faint haze of smoke and the acrid smell of gunpowder. Its ghostly form flickers as it reloads an ancient, cursed pistol with unnerving precision.",
         "AC": 11,
         "weapons": [
           {
             "id": 102,
             "name": "Cursed Pistol",
-            "description": "A pistol that fires phantom bullets.",
+            "description": "A spectral firearm that fires phantom bullets. The bullets pass through armor to strike directly at the soul.",
             "image": "🔫",
-            "bonuses": [],
             "damage": 8,
             "bonus": 1,
             "isWeapon": true
@@ -64,7 +64,7 @@
         ],
         "health": 12
       }
-    ],
+    ],    
     "options": [
       {
         "name": "Win",
