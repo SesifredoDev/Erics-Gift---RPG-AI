@@ -66,3 +66,44 @@ p{
         width: 45%;
     }
 }
+
+@media screen and (max-width: 425px) {
+    .combat-container{
+        display: flex;
+        flex-direction: column;
+    }
+    .combat-container ion-card{
+        height: min-content;
+    }
+    
+    .player-info{
+        width: auto;
+        display: flex;
+        
+    }
+    .player-info ion-card-content p{
+        margin: 5%;
+    } 
+    .player-info ion-card-content{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        font-size: small;
+        justify-content: flex-start;
+        margin: 0px;
+        padding: 0px;
+        height: min-content;
+    }
+    
+    .combat-details{
+        height: 70% !important;
+        width: unset;
+    }
+    .player-info *{
+        margin: auto;
+    }
+    img{
+        width: 30vw;
+        height: 30%;
+    }
+}

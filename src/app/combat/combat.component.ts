@@ -44,6 +44,8 @@ export class CombatComponent implements OnInit {
 
   stage: string = 'null';
 
+  typingspeed: number = 15;
+
   
   Display = new DisplayResults()
 
@@ -329,7 +331,7 @@ export class CombatComponent implements OnInit {
             if (index < text.length) {
                 this.loadedText[target] += text.charAt(index);
                 index++;
-                setTimeout(type, 10); // Adjust typing speed
+                setTimeout(type, this.typingspeed); // Adjust typing speed
                 // this.combatDetailsElement.scrollToBottom(400);
             } else {
                 resolve(); // Resolve the promise when typing is done
@@ -337,6 +339,11 @@ export class CombatComponent implements OnInit {
         };
         type();
     });
+}
+
+async speedup(){
+  this.typingspeed = 1; // 100ms per character
+  setTimeout(() =>{this.typingspeed = 10}, 3000)
 }
 
 
