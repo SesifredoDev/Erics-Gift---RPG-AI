@@ -178,7 +178,7 @@ export class CombatComponent implements OnInit {
       this.loadedText[topLoadedText] = `Initiative Roll: ${DiceResult[0].value} + ${(this.player.dexterity -10)/2}`;
       
       for (let i = 0; i <this.enemies.length; i++) {
-        let enemyInitiative = this.randomIntFromInterval(1, 1);
+        let enemyInitiative = this.randomIntFromInterval(1, 20);
         rollResults.push({isPlayer: false, enemyPosition:i, roll:enemyInitiative})
       }
 
