@@ -26,6 +26,11 @@ img{
 .player-info{
     width: 20%;
 }
+.player-info *{
+    
+    color: black;
+    font-weight: bolder;
+}
 .combat-details{
     width: 75%;
     height: 100%;

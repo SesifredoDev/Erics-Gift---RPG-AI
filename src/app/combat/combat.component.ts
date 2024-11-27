@@ -124,11 +124,11 @@ export class CombatComponent implements OnInit {
 
         await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second delay
         let hit = this.randomIntFromInterval(1, 20) + weapon.bonus;
-
-        if (hit > this.player.ac) {
+        console.log(hit);
+        if (hit > this.player.AC) {
             let damage = this.randomIntFromInterval(1, weapon.damage * 6);
             await this.typeText(`${currentEnemy.name} hits you for ${damage} damage`, topLoadedText);
-            this.player.health -= damage;
+            this.player.currentHealth -= damage;
 
             await this.typeText(
                 await this.openAIService.generateEnemyAttack(
@@ -141,8 +141,7 @@ export class CombatComponent implements OnInit {
                 topLoadedText
             );
 
-            if (this.player.health <= 0) {
-                await this.typeText(`You have been defeated!`, topLoadedText);
+            if (this.player.currentHealth <= 0) {
                 this.leave(false);
                 return;
             }
@@ -222,7 +221,9 @@ export class CombatComponent implements OnInit {
         let rollResult = DiceResult[0].value + item.bonus;
         let failed = false;
         let finishing = false;
-
+        if (this.activeTarget?.description !== undefined)
+          targetDescription = `${this.activeTarget.name} - ${this.activeTarget.description}`;
+      console.log(targetDescription);
         // Determine if the roll hits
         if (this.activeTarget && rollResult >= this.activeTarget.AC) {
             await this.typeText(`Hit! (Rolled: ${DiceResult[0].value} + ${item.bonus} = ${rollResult})`, topLoadedText);
@@ -253,6 +254,29 @@ export class CombatComponent implements OnInit {
                         if (this.activeTarget.currentHealth <= 0) {
                             finishing = true;
                             await this.typeText(`Target defeated!`, topLoadedText);
+                            if (this.activeTarget && enemyIndex >= 0) this.enemies.splice(enemyIndex, 1);
+                            
+                            const alert = await this.alertCtrl.create({
+                              header: "How do you want to do this?",
+                              inputs: [
+                                  {
+                                      type: "textarea",
+                                      placeholder: `${this.player.name} brings their fist down upon ${this.activeTarget?.name}`,
+                                  },
+                              ],
+                              buttons: ["OK"],
+                              backdropDismiss: false,
+                          });
+                          await alert.present();
+
+                          await alert.onDidDismiss().then(async (killDescriptionAlert: any) => {
+                              console.log(killDescriptionAlert);
+                              const userDescription = killDescriptionAlert.data?.values?.[0];
+                              this.loadedText.push(userDescription);
+
+                              let result = await this.openAIService.killingResponse(userDescription);
+                              await this.typeText(result, topLoadedText, true);
+                          });
                         }
                     }
                 };
@@ -265,34 +289,11 @@ export class CombatComponent implements OnInit {
 
         this.diceBox.clear();
 
-        if (this.activeTarget?.description !== undefined)
-            targetDescription = `${this.activeTarget.name} - ${this.activeTarget.description}`;
-        console.log(targetDescription);
+        
 
         try {
             let result = "";
             if (finishing) {
-                const alert = await this.alertCtrl.create({
-                    header: "How do you want to do this?",
-                    inputs: [
-                        {
-                            type: "textarea",
-                            placeholder: `${this.player.name} brings their fist down upon ${this.activeTarget?.name}`,
-                        },
-                    ],
-                    buttons: ["OK"],
-                    backdropDismiss: false,
-                });
-                await alert.present();
-
-                await alert.onDidDismiss().then(async (killDescriptionAlert: any) => {
-                    console.log(killDescriptionAlert);
-                    const userDescription = killDescriptionAlert.data?.values?.[0];
-                    this.loadedText.push(userDescription);
-
-                    result = await this.openAIService.killingResponse(userDescription);
-                    await this.typeText(result, topLoadedText, true);
-                });
             } else if (this.activeTarget?.currentHealth) {
                 const generatedAttack = await this.openAIService.generateAttack(
                     item.description,
@@ -353,6 +354,7 @@ export class CombatComponent implements OnInit {
 
   leave(win: boolean){
     this.clearSelection();
+    this.stage  =  'end'
     this.typeText(win? 'You win!' : 'You lose!', this.loadedText.length);
 
   }

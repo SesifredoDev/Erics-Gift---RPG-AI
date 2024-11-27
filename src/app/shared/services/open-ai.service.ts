@@ -65,7 +65,7 @@ export class OpenAIService {
       this.messages.push( { role: 'user', content: `Enemy ${enemyName} is attacking the Payer` });
       
       if (fail) this.messages.push({role:'user', content: 'This Attack misses'});
-      else this.messages.push({role:'user', content: `the player is on ${lifePercentage * 100}% health`});
+      else this.messages.push({role:'user', content: `the attack hits and the player is on ${lifePercentage * 100}% health`});
       this.messages.push( { role: 'user', content: `limited to 1 paragraph, adn continuing from the last description, describe ${enemyName} attacking Darryn with the weapon` });
       
       let result = await ai.generate(this.model, this.messages);

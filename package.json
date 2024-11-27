@@ -29,6 +29,7 @@
     "@capacitor/keyboard": "6.0.2",
     "@capacitor/status-bar": "6.0.1",
     "@ionic/angular": "^8.0.0",
+    "@mediagrid/capacitor-native-audio": "^1.1.0",
     "ai": "^3.4.33",
     "electron": "^32.1.2",
     "ionicons": "^7.0.0",
@@ -36,6 +37,7 @@
     "p5": "^0.7.3",
     "package.json": "^2.0.1",
     "rxjs": "~7.8.0",
+    "ryan-music-player": "^1.0.7",
     "tslib": "^2.3.0",
     "unlimited-ai": "^3.0.0",
     "zone.js": "~0.14.2"
