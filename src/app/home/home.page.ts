@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, viewChild } from '@angular/core';
 import { GameService } from '../shared/services/game.service';
 import { IStory } from '../shared/modals/story.modal';
 import { ModalController } from '@ionic/angular';
@@ -12,6 +12,7 @@ import { CombatComponent } from '../combat/combat.component';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
+
   activateOptions:boolean = false;
   storyBlock: any = {
     "id": 0,
@@ -28,7 +29,7 @@ export class HomePage implements OnInit {
   };
 
   displayedText: string = ''; // Variable to store the displayed text
-  typingSpeed: number = 25; // Speed of typing in milliseconds
+  typingSpeed: number = 15; // Speed of typing in milliseconds
 
   constructor(private gameService: GameService, public modalController: ModalController) { }
 

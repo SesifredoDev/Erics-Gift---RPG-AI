@@ -5,7 +5,7 @@
         <ion-card-content>
             <img src="assets/darryn.png" alt="">
             
-            <p>Health: {{player?.health}}</p>
+            <p>Health: {{player?.currentHealth}}</p>
             <p>AC: {{player?.AC}}</p>
             <p>STR: {{player?.strength}}</p>
             
@@ -21,13 +21,10 @@
             
         </ion-card-content>
     </ion-card>
-    <ion-card class="combat-details"  #combatDetailsElement>
-        <ion-card-content>
-            <div>
-                <p color="warning">Enemy Health: 100</p>
-            </div>
+    <ion-card class="combat-details"   >
+        <ion-card-content #combatDetailsElement  >
             <div class="description-block">
-                <div *ngFor="let item of loadedText">
+                <div *ngFor="let item of loadedText.slice().reverse()">
                     <p>> {{item}}</p>
                     <br />
                 </div>
@@ -41,9 +38,14 @@
     <div class="main-options">
         <ion-item *ngIf="touchy" (click)="getAttacks()">Attack</ion-item> 
         <ion-item *ngIf="touchy" (click)="dodge()" >Dodge</ion-item>
-        <ion-item *ngIf="touchy" (click)="getInventory()">Inventory</ion-item>    
+        <ion-item *ngIf="touchy" (click)="getInventory()">Inventory</ion-item>
+        <p>Right click weapons to see their attributes</p>    
     </div>
     <!-- Enemies -->
+    <div class="sub-options"  *ngIf="stage==='nextTurn'" >
+        
+        <ion-item (click)="nextTurn()">Next Turn</ion-item>
+    </div>
     <div class="sub-options"  *ngIf="touchy && stage==='attackTarget'" >
         
         <ion-item (click)="selectTarget(option)" *ngFor="let option of enemies">{{option.name}}</ion-item>
@@ -51,7 +53,16 @@
     
     <div class="sub-options"  *ngIf="touchy && stage==='attackWeapon'" >
         
-        <ion-item (click)="attack(option)" *ngFor="let option of weapons">{{option.image}} -{{option.name}}</ion-item>
+        <ion-item (click)="attack(option)" *ngFor="let option of weapons" [id]="'hover-trigger-'+option.name">{{option.image}} -{{option.name}}</ion-item>
+        <ion-popover  *ngFor="let option of weapons" [trigger]="'hover-trigger-'+option.name" triggerAction="context-menu">
+            <ng-template>
+              <ion-content class="ion-padding">Damage {{option.damage}}, Attack Bonus: {{option.bonus}}</ion-content>
+            </ng-template>
+          </ion-popover>
+    </div>
+
+    <div class="sub-options" *ngIf="initiative.length === 0">
+        <ion-item (click)="rollInitiative()">Roll For Initiative</ion-item>
     </div>
 
 </div>

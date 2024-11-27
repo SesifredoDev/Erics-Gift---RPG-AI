@@ -4,8 +4,11 @@ import * as p5 from 'p5';
 import { GameService } from '../shared/services/game.service';
 import { IItem, IWeapon } from '../shared/modals/item.modal';
 import { OpenAIService } from '../shared/services/open-ai.service';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, ToastController } from '@ionic/angular';
 import DiceBox from '@3d-dice/dice-box';
+import DisplayResults from '@3d-dice/dice-box';
+import { delay, timeInterval } from 'rxjs';
+import { waitForAsync } from '@angular/core/testing';
 
 
 
@@ -16,7 +19,7 @@ import DiceBox from '@3d-dice/dice-box';
 })
 export class CombatComponent implements OnInit {
 
-  @ViewChild('combatDetailsElement') private combatDetailsElement!: ElementRef;
+  @ViewChild('combatDetailsElement') private combatDetailsElement!: IonContent;
   @ViewChild('diceContainer', { static: true }) diceContainer!: ElementRef<HTMLDivElement>;
   private diceBox!: any;
 
@@ -27,16 +30,22 @@ export class CombatComponent implements OnInit {
   weapons: any[] = [];
 
 
-  enemies: IEnemy[] | undefined = [];
+  enemies: IEnemy[] = [];
   activeTarget?: IEnemy;
 
 
   options: any[] = [];
   canvas: any = null;
 
-  touchy: boolean = true;
+  initiative:  { isPlayer: boolean; enemyPosition?: number; roll: number; }[] = [];
+  currentTurn: number = -1;
+
+  touchy: boolean = false;
 
   stage: string = 'null';
+
+  
+  Display = new DisplayResults()
 
 
   loadedText: string[]= [
@@ -75,8 +84,9 @@ export class CombatComponent implements OnInit {
 
     console.log(this.combatBlock);
     this.player = this.gameService.getPlayer();
+    this.player.currentHealth = this.player.health;
     this.inventory = this.gameService.getCurrentInventory();
-    this.enemies = this.combatBlock?.enemies;
+    if(this.combatBlock?.enemies)  this.enemies = this.combatBlock?.enemies;
     for (let weapon of this.inventory) {
       if (weapon.isWeapon) {
         this.weapons.push(weapon);
@@ -85,6 +95,100 @@ export class CombatComponent implements OnInit {
     console.log(this.weapons, this.inventory);
 
     if(this.combatBlock)    this.openAIService.initChain(this.playerDescription, this.combatBlock?.description);
+  }
+
+  async nextTurn() {
+    this.stage = 'deciding turn'
+    this.currentTurn = this.currentTurn + 1;
+    if (this.currentTurn >= this.initiative.length) this.currentTurn = 0;
+
+    let current = this.initiative[this.currentTurn];
+    console.log(current);
+    let topLoadedText = this.loadedText.length;
+
+    if (current.isPlayer) {
+      this.stage = 'playerTurn' 
+        this.touchy = true;
+    } else if (!current.isPlayer && current.enemyPosition !== undefined) {
+      this.stage = 'enemyTurn'
+        this.touchy = false;
+        let currentEnemy = this.enemies[current.enemyPosition];
+
+        await this.typeText(`Enemy Turn: ${currentEnemy.name}`, topLoadedText);
+
+        let choice = this.randomIntFromInterval(1, currentEnemy.weapons.length);
+        let weapon = currentEnemy.weapons[choice - 1];
+
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 1-second delay
+        await this.typeText(`Enemy Attacking with ${weapon.name}`, topLoadedText);
+
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second delay
+        let hit = this.randomIntFromInterval(1, 20) + weapon.bonus;
+
+        if (hit > this.player.ac) {
+            let damage = this.randomIntFromInterval(1, weapon.damage * 6);
+            await this.typeText(`${currentEnemy.name} hits you for ${damage} damage`, topLoadedText);
+            this.player.health -= damage;
+
+            await this.typeText(
+                await this.openAIService.generateEnemyAttack(
+                    weapon.description,
+                    currentEnemy.name,
+                    currentEnemy.description,
+                    false,
+                    this.player.health
+                ),
+                topLoadedText
+            );
+
+            if (this.player.health <= 0) {
+                await this.typeText(`You have been defeated!`, topLoadedText);
+                this.leave(false);
+                return;
+            }
+
+            this.stage = 'nextTurn'
+        } else {
+            await this.typeText(
+                await this.openAIService.generateEnemyAttack(
+                    weapon.description,
+                    currentEnemy.name,
+                    currentEnemy.description,
+                    true,
+                    this.player.health
+                ),
+                topLoadedText
+            );
+            this.stage = 'nextTurn'
+        }
+    }
+}
+  randomIntFromInterval(min: number, max: number) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  rollInitiative(){
+    let topLoadedText = this.loadedText.length;
+    this.loadedText[topLoadedText] = "Loading Result..."
+    let targetDescription = ''
+    this.diceBox.roll('1d20');
+    this.diceBox.onRollComplete = async (DiceResult: any) => { 
+      let rollResults = []
+      let result: number = (this.player.dexterity -10)/2 +  DiceResult[0].value;
+      rollResults.push({isPlayer: true, roll: result})
+      this.loadedText[topLoadedText] = `Initiative Roll: ${DiceResult[0].value} + ${(this.player.dexterity -10)/2}`;
+      
+      for (let i = 0; i <this.enemies.length; i++) {
+        let enemyInitiative = this.randomIntFromInterval(1, 1);
+        rollResults.push({isPlayer: false, enemyPosition:i, roll:enemyInitiative})
+      }
+
+      rollResults.sort((a,b) => b.roll - a.roll);
+
+      this.initiative = rollResults;
+      console.log(this.initiative)
+      this.nextTurn();
+    }
   }
 
   getAttacks() {
@@ -101,112 +205,156 @@ export class CombatComponent implements OnInit {
   getInventory(){}
 
   async attack(item: IWeapon) {
+    let enemyIndex: number = -1;
+    if (this.enemies) enemyIndex = this.enemies.findIndex(enemy => enemy === this.activeTarget);
+    if (this.activeTarget && !this.activeTarget.currentHealth) this.activeTarget.currentHealth = this.activeTarget.health;
+
     this.touchy = false;
-    //  Set up Typing
+
+    // Set up Typing
     let topLoadedText = this.loadedText.length;
-    this.loadedText[topLoadedText] = "Loading Result..."
-    let targetDescription = ''
+    this.loadedText[topLoadedText] = "Loading Result...";
+    let targetDescription = "";
 
-    if(item.bonus !== undefined && item.bonus > 0)  this.loadedText[topLoadedText]=('1d20 + ' + item.bonus);
-    else  this.loadedText[topLoadedText] =('1d20');
+    // Roll for attack
+    this.diceBox.roll("1d20");
+    this.diceBox.onRollComplete = async (DiceResult: any) => {
+        let rollResult = DiceResult[0].value + item.bonus;
+        let failed = false;
+        let finishing = false;
 
-    this.diceBox.roll('1d20');
-    this.diceBox.onRollComplete = async (DiceResult: any) => {  
-      let rollResult = DiceResult[0].value + item.bonus;
-      let failed = false;
-      let finishing = false;
-      if(this.activeTarget && rollResult >= this.activeTarget.AC){
-        this.loadedText[topLoadedText] = 'Hit!'
-        this.activeTarget.health -= rollResult;
-        if(this.activeTarget.health <= 0) this.activeTarget.health = 0; finishing = true;
+        // Determine if the roll hits
+        if (this.activeTarget && rollResult >= this.activeTarget.AC) {
+            await this.typeText(`Hit! (Rolled: ${DiceResult[0].value} + ${item.bonus} = ${rollResult})`, topLoadedText);
 
-      }else if(this.activeTarget && rollResult < this.activeTarget.AC){
-        this.loadedText[topLoadedText] = 'Miss!'
-        failed = true;
-      }
+            if (item.damage) {
+              let damage = 0;
+              // Add a delay before rolling damage
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second delay
+                if(item.type){
+                  if(item.type  ==  'str') damage += (this.player.strength  -10)/2;
+                  if(item.type  ==  'con') damage += (this.player.constitution  -10)/2;
+                  if(item.type  ==  'dex') damage += (this.player.dexterity  -10)/2;
+                  if(item.type  ==  'int') damage += (this.player.intelligence  -10)/2;
+                  if(item.type  ==  'wis') damage += (this.player.wisdom  -10)/2;
+                  if(item.type  ==  'cha') damage += (this.player.charisma  -10)/2;
+                }
+                this.diceBox.roll(`${item.damage}d6`);
+                this.diceBox.onRollComplete = async (damageResult: any) => {
+                    damage += damageResult[0].value;
+                    
 
+                    // Update target health and loadedText
+                    if (this.activeTarget?.currentHealth !== undefined) {
+                        this.activeTarget.currentHealth -= damage;
+                        await this.typeText(`Damage dealt: ${damage}`, topLoadedText);
 
-
-
-      if (this.activeTarget?.description !== undefined)  targetDescription = this.activeTarget.name + ' - ' + this.activeTarget.description;
-      console.log(targetDescription)
-
-
-      try{
-        if(item.damage){
-          let randomDamage = Math.random()*item.damage
-          console.log(randomDamage)
-          // target.health = target.health- Number(item?.damage);
+                        // Check if the target is defeated
+                        if (this.activeTarget.currentHealth <= 0) {
+                            finishing = true;
+                            await this.typeText(`Target defeated!`, topLoadedText);
+                        }
+                    }
+                };
+            }
+        } else if (this.activeTarget && rollResult < this.activeTarget.AC) {
+            // Handle miss case
+            await this.typeText(`Miss! (Rolled: ${DiceResult[0].value} + ${item.bonus} = ${rollResult})`, topLoadedText);
+            failed = true;
         }
-        let result = '';
-        if(finishing) {
-          const alert = await this.alertCtrl.create({  
-            header: 'How do you want todo this?',  
-            inputs: [
-              {
-                type: 'textarea',
-                placeholder: `${this.player.name} brings their fist down upon ${this.activeTarget?.name}`,
-              },
-            ],
-            buttons: ['OK'],
-            backdropDismiss: false,
-          });  
-          await alert.present();
-          alert.onDidDismiss().then(async (killDescriptionAlert: any)=>{
-            console.log(killDescriptionAlert);
-            this.loadedText.push(killDescriptionAlert.value);
-            
-            
-            result = await this.openAIService.killingResponse( 'nothing');
-            this.typeText(result, topLoadedText)
-            
-          })
-        
-        } else  this.typeText ( (await this.openAIService.generateAttack( item.description,targetDescription, failed)), topLoadedText)
 
-        
-      }catch(e){
-        const toast = await this.toastCtrl.create({
-          message: 'Error while processing the attack',
-          duration: 2000,
-          color: 'danger'
-        })
-        toast.present();
-      }    
+        this.diceBox.clear();
 
-    }
-    
-    
-    
-    // .subscribe((response: any) => {
-    //   console.log(response.choices[0].text);
-    // });
-  }
+        if (this.activeTarget?.description !== undefined)
+            targetDescription = `${this.activeTarget.name} - ${this.activeTarget.description}`;
+        console.log(targetDescription);
 
-  async typeText(text: string, target: number) {
-    this.touchy = false;
-    this.loadedText[target] = "";  // Clear previous text
-    let index = 0;
-    const type = () => {
-      if (index < text.length) {
-        this.loadedText[target] += text.charAt(index);
-        index++;
-        setTimeout(type, 30);
-      }else{
+        try {
+            let result = "";
+            if (finishing) {
+                const alert = await this.alertCtrl.create({
+                    header: "How do you want to do this?",
+                    inputs: [
+                        {
+                            type: "textarea",
+                            placeholder: `${this.player.name} brings their fist down upon ${this.activeTarget?.name}`,
+                        },
+                    ],
+                    buttons: ["OK"],
+                    backdropDismiss: false,
+                });
+                await alert.present();
+
+                await alert.onDidDismiss().then(async (killDescriptionAlert: any) => {
+                    console.log(killDescriptionAlert);
+                    const userDescription = killDescriptionAlert.data?.values?.[0];
+                    this.loadedText.push(userDescription);
+
+                    result = await this.openAIService.killingResponse(userDescription);
+                    await this.typeText(result, topLoadedText, true);
+                });
+            } else if (this.activeTarget?.currentHealth) {
+                const generatedAttack = await this.openAIService.generateAttack(
+                    item.description,
+                    this.activeTarget.name,
+                    targetDescription,
+                    failed,
+                    this.activeTarget.currentHealth / this.activeTarget.health
+                );
+                await this.typeText(generatedAttack, topLoadedText, true);
+            }
+        } catch (e) {
+            const toast = await this.toastCtrl.create({
+                message: "Error while processing the attack",
+                duration: 2000,
+                color: "danger",
+            });
+            toast.present();
+        }
+
+        if (this.activeTarget && enemyIndex >= 0) this.enemies[enemyIndex] = this.activeTarget;
         
-      this.touchy = true;  
-      this.clearSelection(); 
-      }
-      
+        this.stage = 'nextTurn'
     };
-    await type();
-  }
+}
+
+  async typeText(text: string, target: number, player?: boolean): Promise<void> {
+    this.touchy = false;
+    this.loadedText[target] = ""; // Clear previous text
+    let index = 0;
+
+    return new Promise<void>((resolve) => {
+        const type = () => {
+            if (index < text.length) {
+                this.loadedText[target] += text.charAt(index);
+                index++;
+                setTimeout(type, 10); // Adjust typing speed
+                // this.combatDetailsElement.scrollToBottom(400);
+            } else {
+                resolve(); // Resolve the promise when typing is done
+            }
+        };
+        type();
+    });
+}
+
+
+
+
+  // Enemy Moves
 
 
 
   clearSelection(){
     this.stage = 'null';
     this.activeTarget = undefined;
+    this.diceBox.clear();
+  }
+
+  leave(win: boolean){
+    this.clearSelection();
+    this.typeText(win? 'You win!' : 'You lose!', this.loadedText.length);
+
   }
 
 }
