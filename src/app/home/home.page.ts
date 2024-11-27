@@ -89,4 +89,8 @@ export class HomePage implements OnInit {
     this.ngOnInit(); // Reload the page to start a new game
   }
 
+  async speedup(){
+    this.typingSpeed = 1; // 100ms per character
+    setTimeout(() =>{this.typingSpeed = 10}, 6000)
+  }
 }
