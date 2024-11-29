@@ -22,7 +22,7 @@ export class CombatComponent implements OnInit {
   @ViewChild('combatDetailsElement') private combatDetailsElement!: IonContent;
   @ViewChild('diceContainer', { static: true }) diceContainer!: ElementRef<HTMLDivElement>;
   private diceBox!: any;
-
+ // 20 min kiss
   combatBlock?: ICombat;
   player: any = null;
   playerDescription: string = "Darryn is a lithe, wiry figure, their movements imbued with the ease and precision of someone accustomed to living in the shadows. They wear a fitted, dark leather tunic reinforced with subtle, overlapping scales for protection without sacrificing agility. A hood, often drawn low, casts a shadow over sharp features—cheekbones high and prominent, framing a pair of keen, observant eyes that glint like shards of polished steel. Their skin bears the faint, sun-kissed tone of someone often outdoors yet cloaked in shadow. A small collection of scars—a nick on the brow, a faint line across one hand—suggests experience rather than recklessness. At their side, a pair of daggers rest in worn leather sheaths, the hilts wrapped in strips of dark cloth for a surer grip. A weathered pouch hangs from their belt, hinting at hidden supplies, and their boots, soft-soled and expertly worn-in, make no sound even on the roughest ground. A faint air of mystery surrounds Darryn, their gaze a blend of guarded intensity and an almost restless curiosity, as though they are constantly calculating the next move.";
@@ -37,7 +37,7 @@ export class CombatComponent implements OnInit {
   options: any[] = [];
   canvas: any = null;
 
-  initiative:  { isPlayer: boolean; enemyPosition?: number; roll: number; }[] = [];
+  initiative:  { isPlayer: boolean; enemyid?: number; roll: number; }[] = [];
   currentTurn: number = -1;
 
   touchy: boolean = false;
@@ -81,10 +81,6 @@ export class CombatComponent implements OnInit {
     // Wait for DiceBox to initialize
     await this.diceBox.init();
 
-    console.log(this.diceBox)
-
-
-    console.log(this.combatBlock);
     this.player = this.gameService.getPlayer();
     this.player.currentHealth = this.player.health;
     this.inventory = this.gameService.getCurrentInventory();
@@ -95,11 +91,13 @@ export class CombatComponent implements OnInit {
       }
     }
     console.log(this.weapons, this.inventory);
-
-    if(this.combatBlock)    this.openAIService.initChain(this.playerDescription, this.combatBlock?.description);
+    if(this.combatBlock?.limitation) this.openAIService.initChain(this.playerDescription, this.combatBlock?.description, this.combatBlock.limitation);
+    else if(this.combatBlock)    this.openAIService.initChain(this.playerDescription, this.combatBlock?.description);
   }
 
   async nextTurn() {
+    console.log(this.enemies)
+    console.log(this.initiative);
     this.stage = 'deciding turn'
     this.currentTurn = this.currentTurn + 1;
     if (this.currentTurn >= this.initiative.length) this.currentTurn = 0;
@@ -111,10 +109,17 @@ export class CombatComponent implements OnInit {
     if (current.isPlayer) {
       this.stage = 'playerTurn' 
         this.touchy = true;
-    } else if (!current.isPlayer && current.enemyPosition !== undefined) {
+    } else if (!current.isPlayer && current.enemyid !== undefined) {
       this.stage = 'enemyTurn'
         this.touchy = false;
-        let currentEnemy = this.enemies[current.enemyPosition];
+        let currentEnemy = this.enemies.find(enemy => enemy.id === current.enemyid);
+        if(currentEnemy == undefined) {
+          this.nextTurn();
+          return;
+        }
+
+        
+
 
         await this.typeText(`Enemy Turn: ${currentEnemy.name}`, topLoadedText);
 
@@ -181,7 +186,7 @@ export class CombatComponent implements OnInit {
       
       for (let i = 0; i <this.enemies.length; i++) {
         let enemyInitiative = this.randomIntFromInterval(1, 20);
-        rollResults.push({isPlayer: false, enemyPosition:i, roll:enemyInitiative})
+        rollResults.push({isPlayer: false, enemyid:this.enemies[i].id, roll:enemyInitiative})
       }
 
       rollResults.sort((a,b) => b.roll - a.roll);
@@ -207,6 +212,7 @@ export class CombatComponent implements OnInit {
 
   async attack(item: IWeapon) {
     let enemyIndex: number = -1;
+    console.log(this.enemies)
     if (this.enemies) enemyIndex = this.enemies.findIndex(enemy => enemy === this.activeTarget);
     if (this.activeTarget && !this.activeTarget.currentHealth) this.activeTarget.currentHealth = this.activeTarget.health;
 
@@ -216,6 +222,8 @@ export class CombatComponent implements OnInit {
     let topLoadedText = this.loadedText.length;
     this.loadedText[topLoadedText] = "Loading Result...";
     let targetDescription = "";
+
+    console.log(this.activeTarget)
 
     // Roll for attack
     this.diceBox.roll("1d20");
@@ -251,36 +259,72 @@ export class CombatComponent implements OnInit {
                     if (this.activeTarget?.currentHealth !== undefined) {
                         this.activeTarget.currentHealth -= damage;
                         await this.typeText(`Damage dealt: ${damage}`, topLoadedText);
+                        if (this.activeTarget && enemyIndex >= 0) this.enemies[enemyIndex] = this.activeTarget;
 
                         // Check if the target is defeated
                         if (this.activeTarget.currentHealth <= 0) {
                             finishing = true;
                             await this.typeText(`Target defeated!`, topLoadedText);
-                            if (this.activeTarget && enemyIndex >= 0) this.enemies.splice(enemyIndex, 1);
+                            if (this.activeTarget.id !== undefined) {
+                              this.enemies = this.enemies.filter(enemy => enemy.id !== this.activeTarget?.id);
+                              
+                              console.log(this.activeTarget.id, this.enemies)
+                              
+                            };
                             
-                            const alert = await this.alertCtrl.create({
-                              header: "How do you want to do this?",
-                              inputs: [
-                                  {
-                                      type: "textarea",
-                                      placeholder: `${this.player.name} brings their fist down upon ${this.activeTarget?.name}`,
-                                  },
-                              ],
-                              buttons: ["OK"],
-                              backdropDismiss: false,
-                          });
-                          await alert.present();
-
-                          await alert.onDidDismiss().then(async (killDescriptionAlert: any) => {
-                              console.log(killDescriptionAlert);
-                              const userDescription = killDescriptionAlert.data?.values?.[0];
-                              this.loadedText.push(userDescription);
-
-                              let result = await this.openAIService.killingResponse(userDescription);
-                              await this.typeText(result, topLoadedText, true);
-                          });
+                            
                         }
                     }
+                    this.diceBox.clear();
+
+
+                    try {
+                      let result = "";
+
+
+                      // If the blow was a killing bow, request description, remove the enemy from both the initiative and enemies list
+                      if (finishing) {
+                        const alert = await this.alertCtrl.create({
+                          header: "How do you want to do this?",
+                          inputs: [
+                              {
+                                  type: "textarea",
+                                  placeholder: `${this.player.name} brings their fist down upon ${this.activeTarget?.name}`,
+                              },
+                          ],
+                          buttons: ["OK"],
+                          backdropDismiss: false,
+                      });
+                      await alert.present();
+          
+                      await alert.onDidDismiss().then(async (killDescriptionAlert: any) => {
+                          console.log(killDescriptionAlert);
+                          const userDescription = killDescriptionAlert.data?.values?.[0];
+                          this.loadedText[topLoadedText] =(userDescription);
+          
+                          let result = await this.openAIService.killingResponse(userDescription);
+                          await this.typeText(result, topLoadedText, true);
+                      });
+                      } else if (this.activeTarget?.currentHealth) {
+                          const generatedAttack = await this.openAIService.generateAttack(
+                              item.description,
+                              this.activeTarget.name,
+                              targetDescription,
+                              failed,
+                              this.activeTarget.currentHealth / this.activeTarget.health
+                          );
+                          await this.typeText(generatedAttack, topLoadedText, true);
+                      }
+                  } catch (e) {
+                      const toast = await this.toastCtrl.create({
+                          message: "Error while processing the attack",
+                          duration: 2000,
+                          color: "danger",
+                      });
+                      toast.present();
+                  }
+                  
+                  this.stage = 'nextTurn'
                 };
             }
         } else if (this.activeTarget && rollResult < this.activeTarget.AC) {
@@ -293,31 +337,7 @@ export class CombatComponent implements OnInit {
 
         
 
-        try {
-            let result = "";
-            if (finishing) {
-            } else if (this.activeTarget?.currentHealth) {
-                const generatedAttack = await this.openAIService.generateAttack(
-                    item.description,
-                    this.activeTarget.name,
-                    targetDescription,
-                    failed,
-                    this.activeTarget.currentHealth / this.activeTarget.health
-                );
-                await this.typeText(generatedAttack, topLoadedText, true);
-            }
-        } catch (e) {
-            const toast = await this.toastCtrl.create({
-                message: "Error while processing the attack",
-                duration: 2000,
-                color: "danger",
-            });
-            toast.present();
-        }
-
-        if (this.activeTarget && enemyIndex >= 0) this.enemies[enemyIndex] = this.activeTarget;
         
-        this.stage = 'nextTurn'
     };
 }
 

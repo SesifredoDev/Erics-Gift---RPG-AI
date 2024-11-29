@@ -27,6 +27,7 @@
     "description": "As Darryn steps onto the creaking deck, the air grows cold, and a chilling breeze sweeps through. The ghostly crew turns, their hollow eyes fixating on Darryn. A spectral captain, adorned in tattered regalia, steps forward, brandishing a gleaming cutlass. 'You dare board my ship?' he hisses, the crew circling Darryn with malicious intent.",
     "items": [],
     "isCombat": true,
+    "limitation": "I want one of the enemies to say 'For Mindartis' at least once during combat",
     "enemies":[
       {
         "id": 1,
@@ -39,7 +40,7 @@
             "name": "Spectral Cutlass",
             "description": "A ghostly blade that glows with ethereal light. It slices through flesh as easily as it disrupts the spirit.",
             "image": "⚔️",
-            "damage": 6,
+            "damage": "d6",
             "bonus": 2,
             "isWeapon": true
           }
@@ -57,7 +58,7 @@
             "name": "Cursed Pistol",
             "description": "A spectral firearm that fires phantom bullets. The bullets pass through armor to strike directly at the soul.",
             "image": "🔫",
-            "damage": 8,
+            "damage": "3d6",
             "bonus": 1,
             "isWeapon": true
           }

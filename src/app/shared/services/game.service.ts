@@ -56,8 +56,8 @@ export class GameService {
                   "description": "A standard iron dagger, durable and practical. Its blade is well-balanced, suitable for quick strikes and close combat.",
                   "image": "🔪",
                   "bonuses": [],
-                  "damage": 3,
-                  "bonus": 0,
+                  "damage": "30d6",
+                  "bonus": 20,
                   "isWeapon": true
                 },
                 {
@@ -66,7 +66,7 @@ export class GameService {
                   "description": "An old, slightly corroded dagger. Its edge is worn, but it can still deal a respectable cut in a pinch.",
                   "image": "🪓",
                   "bonuses": [],
-                  "damage": 2,
+                  "damage": "2d8",
                   "bonus": 0,
                   "isWeapon": true
                 },
@@ -76,7 +76,7 @@ export class GameService {
                   "description": "A slim, sharp dagger forged from steel, designed for piercing armor and precision strikes.",
                   "image": "🗡️",
                   "bonuses": [{ "name": "Armor Penetration", "bonus": 1 }],
-                  "damage": 3,
+                  "damage": "d6+3",
                   "bonus": 1,
                   "isWeapon": true
                 },
