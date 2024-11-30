@@ -147,7 +147,9 @@ export class GameService {
   }
 
   getInventory(){
+    console.log(this.gameState.inventory);
     return this.inventory;
+  
   }
 
   getCurrentInventory(){

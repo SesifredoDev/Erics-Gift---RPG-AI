@@ -133,27 +133,33 @@ export class CombatComponent implements OnInit {
         let hit = this.randomIntFromInterval(1, 20) + weapon.bonus;
         console.log(hit);
         if (hit > this.player.AC) {
-            let damage = this.randomIntFromInterval(1, weapon.damage * 6);
-            await this.typeText(`${currentEnemy.name} hits you for ${damage} damage`, topLoadedText);
-            this.player.currentHealth -= damage;
+            this.diceBox.hide();
+            this.diceBox.roll(weapon.damage)
+            this.diceBox.onRollComplete = async(data:any) =>{
+              let damage = data[0].value;
+              await this.typeText(`${currentEnemy.name} hits you for ${damage} damage`, topLoadedText);
+              this.player.currentHealth -= damage;
 
-            await this.typeText(
-                await this.openAIService.generateEnemyAttack(
-                    weapon.description,
-                    currentEnemy.name,
-                    currentEnemy.description,
-                    false,
-                    this.player.health
-                ),
-                topLoadedText
-            );
+              await this.typeText(
+                  await this.openAIService.generateEnemyAttack(
+                      weapon.description,
+                      currentEnemy.name,
+                      currentEnemy.description,
+                      false,
+                      this.player.health
+                  ),
+                  topLoadedText
+              );
 
-            if (this.player.currentHealth <= 0) {
-                this.leave(false);
-                return;
+              if (this.player.currentHealth <= 0) {
+                  this.leave(false);
+                  return;
+              }
+
+              this.stage = 'nextTurn'
             }
-
-            this.stage = 'nextTurn'
+            this.diceBox.show();
+            
         } else {
             await this.typeText(
                 await this.openAIService.generateEnemyAttack(
@@ -280,9 +286,6 @@ export class CombatComponent implements OnInit {
 
                     try {
                       let result = "";
-
-
-                      // If the blow was a killing bow, request description, remove the enemy from both the initiative and enemies list
                       if (finishing) {
                         const alert = await this.alertCtrl.create({
                           header: "How do you want to do this?",
@@ -296,25 +299,20 @@ export class CombatComponent implements OnInit {
                           backdropDismiss: false,
                       });
                       await alert.present();
-          
+              
                       await alert.onDidDismiss().then(async (killDescriptionAlert: any) => {
                           console.log(killDescriptionAlert);
                           const userDescription = killDescriptionAlert.data?.values?.[0];
                           this.loadedText[topLoadedText] =(userDescription);
-          
+              
                           let result = await this.openAIService.killingResponse(userDescription);
                           await this.typeText(result, topLoadedText, true);
                       });
-                      } else if (this.activeTarget?.currentHealth) {
-                          const generatedAttack = await this.openAIService.generateAttack(
-                              item.description,
-                              this.activeTarget.name,
-                              targetDescription,
-                              failed,
-                              this.activeTarget.currentHealth / this.activeTarget.health
-                          );
-                          await this.typeText(generatedAttack, topLoadedText, true);
-                      }
+                      }  
+
+
+                      // If the blow was a killing bow, request description, remove the enemy from both the initiative and enemies list
+                      
                   } catch (e) {
                       const toast = await this.toastCtrl.create({
                           message: "Error while processing the attack",
@@ -333,7 +331,22 @@ export class CombatComponent implements OnInit {
             failed = true;
         }
 
+
+        if (this.activeTarget?.currentHealth && !finishing) {
+            const generatedAttack = await this.openAIService.generateAttack(
+                item.description,
+                this.activeTarget.name,
+                targetDescription,
+                failed,
+                this.activeTarget.currentHealth / this.activeTarget.health
+            );
+            await this.typeText(generatedAttack, topLoadedText, true);
+        }
+       
+
         this.diceBox.clear();
+
+        this.stage = 'nextTurn'
 
         
 

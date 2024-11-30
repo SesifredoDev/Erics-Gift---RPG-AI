@@ -10,7 +10,7 @@ export class OpenAIService {
   messages: any[] = [];
   addedDescriptions: any[] = [];
   
-  model = 'gemini-1.5-pro-exp-0827';
+  model = 'grok-2';
 
     async initChain(playerDescription: string, areaDescription: string, limitation?: string){
       this.messages = [];
@@ -48,10 +48,7 @@ export class OpenAIService {
       
       
       this.messages.push({ role: 'user', content:'provide the description in the next message'});
-      let result = await ai.generate(this.model, this.messages);
-      this. messages.push( { role: 'system', content:result});
-      console.log(this.messages)
-      return  result
+      return this.runResponse();
 
     }
 
@@ -68,9 +65,7 @@ export class OpenAIService {
       else this.messages.push({role:'user', content: `the attack hits and the player is on ${lifePercentage * 100}% health`});
       this.messages.push( { role: 'user', content: `limited to 1 paragraph, adn continuing from the last description, describe ${enemyName} attacking Darryn with the weapon` });
       
-      let result = await ai.generate(this.model, this.messages);
-      this. messages.push( { role: 'system', content:result});
-      console.log(this.messages)
+      let result = this.runResponse()
       return  result
 
     }
@@ -78,12 +73,25 @@ export class OpenAIService {
     async killingResponse(playerDescription: string){
       this.messages.push( { role: 'user', content:`player Description, this kills the target: ${playerDescription}`});
       this.messages.push( { role: 'user', content:`take the player description and remake it in context to the rest of the fight, keep the description to 1 paragraph`});
+      return this.runResponse();
+    }
 
-      let result = await ai.generate(this.model, this.messages);
+    async runResponse(){
+      
+      let result: string;
+      result  = await ai.generate(this.model, this.messages);
+      if(result.length <= 5){
+        console.log("bad response")
+        
+        this.messages.push( { role: 'user', content:`generate the description`});
+        result = await this.runResponse();
+      }
       this. messages.push( { role: 'system', content:result});
       return  result
     }
 }
+
+
 
 
 

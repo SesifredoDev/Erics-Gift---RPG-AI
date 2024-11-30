@@ -3,12 +3,40 @@
     <ion-title>Inventory</ion-title>
   </ion-toolbar>
 </ion-header>
-
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Inventory</ion-title>
     </ion-toolbar>
   </ion-header>
-  
+  <ion-card>
+    <ion-card-header class="darryn-card-header">
+      <ion-avatar>
+        <img src="assets/darryn.png" alt="">
+      </ion-avatar>
+      <ion-card-title>Darryn</ion-card-title>
+    </ion-card-header>
+  </ion-card>
+  <ion-card class="inventory-card">
+    <ion-grid class="inventory-grid">
+      <!-- Add as many rows as needed -->
+      <ion-row>
+        <ion-col size="1" class="item-slot">
+          <div class="item-content">👀</div></ion-col>
+        <ion-col size="1" class="item-slot"></ion-col>
+        <ion-col size="1" class="item-slot"></ion-col>
+        <ion-col size="1" class="item-slot"></ion-col>
+        <ion-col size="1" class="item-slot"></ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="1" class="item-slot"></ion-col>
+        <ion-col size="1" class="item-slot"></ion-col>
+        <ion-col size="1" class="item-slot"></ion-col>
+        <ion-col size="1" class="item-slot"></ion-col>
+        <ion-col size="1" class="item-slot"></ion-col>
+      </ion-row>
+      <!-- Add more rows as needed -->
+    </ion-grid>
+  </ion-card>
 </ion-content>
+
