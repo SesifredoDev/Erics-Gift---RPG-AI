@@ -4,7 +4,7 @@ import * as p5 from 'p5';
 import { GameService } from '../shared/services/game.service';
 import { IItem, IWeapon } from '../shared/modals/item.modal';
 import { OpenAIService } from '../shared/services/open-ai.service';
-import { AlertController, IonContent, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, ModalController, ToastController } from '@ionic/angular';
 import DiceBox from '@3d-dice/dice-box';
 import DisplayResults from '@3d-dice/dice-box';
 import { delay, timeInterval } from 'rxjs';
@@ -61,6 +61,7 @@ export class CombatComponent implements OnInit {
     private openAIService: OpenAIService,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
+    private modalCtrl: ModalController,
 
   ) { }
 
@@ -394,8 +395,9 @@ async speedup(){
 
   leave(win: boolean){
     this.clearSelection();
+    this.diceBox = null;
     this.stage  =  'end'
-    this.typeText(win? 'You win!' : 'You lose!', this.loadedText.length);
+    this.modalCtrl.dismiss(win)
 
   }
 

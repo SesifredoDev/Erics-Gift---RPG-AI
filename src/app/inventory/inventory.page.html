@@ -19,23 +19,13 @@
   </ion-card>
   <ion-card class="inventory-card">
     <ion-grid class="inventory-grid">
-      <!-- Add as many rows as needed -->
       <ion-row>
-        <ion-col size="1" class="item-slot">
-          <div class="item-content">👀</div></ion-col>
-        <ion-col size="1" class="item-slot"></ion-col>
-        <ion-col size="1" class="item-slot"></ion-col>
-        <ion-col size="1" class="item-slot"></ion-col>
-        <ion-col size="1" class="item-slot"></ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size="1" class="item-slot"></ion-col>
-        <ion-col size="1" class="item-slot"></ion-col>
-        <ion-col size="1" class="item-slot"></ion-col>
-        <ion-col size="1" class="item-slot"></ion-col>
-        <ion-col size="1" class="item-slot"></ion-col>
-      </ion-row>
+        <ion-col size-lg="1" size-md="1" size-sm="2" size="3" class="item-slot" *ngFor="let item of inventory">
+            <div class="item-content">{{item.image}}</div>
+        </ion-col>
       <!-- Add more rows as needed -->
+      </ion-row>
+        
     </ion-grid>
   </ion-card>
 </ion-content>

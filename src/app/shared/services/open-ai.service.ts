@@ -14,6 +14,8 @@ export class OpenAIService {
 
     async initChain(playerDescription: string, areaDescription: string, limitation?: string){
       this.messages = [];
+      
+      this.messages.push({ role: 'user', content: `whenever asked for the description just give the requested description or redescription of the events passed. do not send just "Ok!" or any form of that message` })
       this.messages.push({ role: 'user', content: `Player Description: ${playerDescription}` });
       this.messages.push({ role: 'user', content: `story Description: ${areaDescription}` })
       this.messages.push({ role: 'user', content: `Write any descriptions as one flowing piece of story of a fight, as if one action is followed by the next` })
@@ -76,17 +78,18 @@ export class OpenAIService {
       return this.runResponse();
     }
 
-    async runResponse(){
+    async runResponse(messages?: any){
       
+      let functionMessages = this.messages;
+      if(messages) functionMessages = messages;
       let result: string;
-      result  = await ai.generate(this.model, this.messages);
+      result  = await ai.generate(this.model, functionMessages);
       if(result.length <= 5){
         console.log("bad response")
-        
-        this.messages.push( { role: 'user', content:`generate the description`});
-        result = await this.runResponse();
+        functionMessages.push( { role: 'user', content:`give me the description or redescription:`});
+        result = await this.runResponse(functionMessages);
       }
-      this. messages.push( { role: 'system', content:result});
+      this.messages.push( { role: 'system', content:result});
       return  result
     }
 }

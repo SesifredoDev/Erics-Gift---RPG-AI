@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, viewChild } from '@angular/core';
 import { GameService } from '../shared/services/game.service';
-import { IStory } from '../shared/modals/story.modal';
-import { ModalController } from '@ionic/angular';
+import { IOption, IStory } from '../shared/modals/story.modal';
+import { AlertController, ModalController } from '@ionic/angular';
 import { ICombat } from '../shared/modals/combat.modal';
 import { CombatComponent } from '../combat/combat.component';
 
@@ -16,9 +16,9 @@ export class HomePage implements OnInit {
   activateOptions:boolean = false;
   storyBlock: any = {
     "id": 0,
-    "title": "Empty Story Block",
-    "pathway": "A blank moment in Darryn's journey.",
-    "description": "This block is intentionally left blank for future use.",
+    "title": "Embark on an Epic Adventure with Darryn!",
+    "pathway": "Start weaving your own threads",
+    "description": "Step into a richly woven tale of mystery, danger, and choice in a fractured world where every decision shapes your destiny. As Darryn, a rogue with a forgotten legacy, you’ll navigate ancient ruins, battle fearsome foes, and uncover powerful relics. Forge your path through gripping combat, strategic exploration, and moral dilemmas. Will you restore balance, wield ultimate power, or succumb to the shadows? The fate of the realm is in your hands. Adventure awaits—dare to answer the call!",
     "items": [],
     "options": [{
       "name": "start",
@@ -31,7 +31,7 @@ export class HomePage implements OnInit {
   displayedText: string = ''; // Variable to store the displayed text
   typingSpeed: number = 15; // Speed of typing in milliseconds
 
-  constructor(private gameService: GameService, public modalController: ModalController) { }
+  constructor(private gameService: GameService, public modalController: ModalController, public alertController: AlertController) { }
 
   async ngOnInit() {
     await this.gameService.intialiseGame(); // Initialise the game state if not already done
@@ -75,10 +75,32 @@ export class HomePage implements OnInit {
     const modal = await this.modalController.create({
       component: CombatComponent,
       componentProps: { combatBlock },
-      cssClass: 'combat-modal'
+      cssClass: 'combat-modal',
+      backdropDismiss: false,
     });
     await modal.present();
-    modal.onDidDismiss().then((data: any) =>{console.log(data)})
+    modal.onDidDismiss().then(async (modalResponse: any) =>{
+      let combatResult: boolean = modalResponse.data;
+      let result: IOption;
+      if(combatResult == true){
+        result = combatBlock.options[0];
+      }else{
+        result = combatBlock.options[1];
+      }
+      const alert = await this.alertController.create({
+        header: result.name,
+        message: result.description,
+        buttons: ["OK"],
+        backdropDismiss: false,
+    });
+    await alert.present();
+
+    await alert.onDidDismiss().then(async (killDescriptionAlert: any) => {
+      this.onOptionSelected(result.targetStoryBlock);
+    })
+
+
+    })
   }
 
 

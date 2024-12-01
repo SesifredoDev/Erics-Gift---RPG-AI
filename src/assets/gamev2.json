@@ -1,0 +1,193 @@
+[
+
+   {
+      "id": 1,
+      "title": "The Beginning of the Quest",
+      "pathway": "You wake up in a bustling medieval town square.",
+      "description": "The town of Eldor rests in the shadow of the Dragonspire Mountains. The chatter of merchants fills the air as you hear a commotion near the town gates.",
+      "items": [],
+      "options": [
+        {
+          "name": "Investigate the commotion",
+          "description": "Approach the gates to see what the noise is about.",
+          "targetStoryBlock": 2
+        },
+        {
+          "name": "Visit the blacksmith",
+          "description": "Head to the blacksmith to purchase equipment.",
+          "targetStoryBlock": 3
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "The Town Gates",
+      "pathway": "You find a group of guards arguing with a cloaked figure.",
+      "description": "The guards accuse the cloaked figure of being a spy for the orc clans. The figure denies this, offering a glowing amulet as proof of their innocence.",
+      "items": [],
+      "options": [
+        {
+          "name": "Intervene and support the cloaked figure",
+          "description": "Stand up for the cloaked figure and challenge the guards.",
+          "targetStoryBlock": 4
+        },
+        {
+          "name": "Side with the guards",
+          "description": "Help the guards arrest the cloaked figure.",
+          "targetStoryBlock": 5
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "The Blacksmith's Forge",
+      "pathway": "You enter the blacksmith's forge, where the heat is almost unbearable.",
+      "description": "The blacksmith offers you a choice of weapons, each with unique properties.",
+      "items": [
+        {
+          "id": 1,
+          "name": "Iron Longsword",
+          "description": "A sturdy blade for close combat.",
+          "image": "⚔️",
+          "bonuses": [
+            {
+              "name": "str",
+              "bonus": 2
+            }
+          ],
+          "isWeapon": true,
+          "damage": "1d8",
+          "bonus": 3
+        },
+        {
+          "id": 2,
+          "name": "Light Crossbow",
+          "description": "A ranged weapon for precision strikes.",
+          "image": "🏹",
+          "bonuses": [
+            {
+              "name": "dex",
+              "bonus": 2
+            }
+          ],
+          "isWeapon": true,
+          "damage": "1d10",
+          "bonus": 2
+        }
+      ],
+      "options": [
+        {
+          "name": "Purchase the Iron Longsword",
+          "description": "Buy the longsword for 20 gold coins.",
+          "collectedItems": [
+            {
+              "id": 1,
+              "name": "Iron Longsword",
+              "description": "A sturdy blade for close combat.",
+              "image": "⚔️",
+              "bonuses": [
+                {
+                  "name": "str",
+                  "bonus": 2
+                }
+              ]
+            }
+          ],
+          "targetStoryBlock": 6
+        },
+        {
+          "name": "Purchase the Light Crossbow",
+          "description": "Buy the crossbow for 15 gold coins.",
+          "collectedItems": [
+            {
+              "id": 2,
+              "name": "Light Crossbow",
+              "description": "A ranged weapon for precision strikes.",
+              "image": "🏹",
+              "bonuses": [
+                {
+                  "name": "dex",
+                  "bonus": 2
+                }
+              ]
+            }
+          ],
+          "targetStoryBlock": 6
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Defending the Stranger",
+      "pathway": "You challenge the guards.",
+      "description": "The guards are unwilling to back down and draw their swords, initiating combat.",
+      "isCombat": true,
+      "enemies": [
+        {
+          "name": "Town Guard",
+          "id": 1,
+          "AC": 14,
+          "weapons": [
+            {
+              "id": 3,
+              "name": "Shortsword",
+              "description": "A standard issue weapon for the town guards.",
+              "image": "🗡️",
+              "bonuses": [
+                {
+                  "name": "str",
+                  "bonus": 1
+                }
+              ],
+              "damage": "1d6",
+              "bonus": 2,
+              "isWeapon": true
+            }
+          ],
+          "health": 12,
+          "currentHealth": 12,
+          "description": "A determined guard wielding a shortsword."
+        }
+      ],
+      "limitation": "The battle ends when the guards surrender or are defeated.",
+      "options": [
+        {
+          "name": "Continue the fight",
+          "description": "Press the attack until the guards yield.",
+          "targetStoryBlock": 7
+        },
+        {
+          "name": "Negotiate a truce",
+          "description": "Convince the guards to let the stranger go.",
+          "targetStoryBlock": 8
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Arresting the Stranger",
+      "pathway": "You side with the guards.",
+      "description": "The cloaked figure glares at you as they are taken into custody. One of the guards offers you a reward for your loyalty.",
+      "items": [
+        {
+          "id": 4,
+          "name": "Gold Pouch",
+          "description": "A hefty pouch of 50 gold coins.",
+          "image": "💰",
+          "bonuses": []
+        }
+      ],
+      "options": [
+        {
+          "name": "Accept the reward",
+          "description": "Take the gold and leave.",
+          "targetStoryBlock": 9
+        },
+        {
+          "name": "Refuse the reward",
+          "description": "Decline the gold and ask for information instead.",
+          "targetStoryBlock": 10
+        }
+      ]
+    }
+  ]

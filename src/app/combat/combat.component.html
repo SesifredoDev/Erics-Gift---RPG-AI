@@ -64,6 +64,9 @@
     <div class="sub-options" *ngIf="initiative.length === 0">
         <ion-item (click)="rollInitiative()">Roll For Initiative</ion-item>
     </div>
+    <div class="sub-options" *ngIf="enemies.length === 0">
+        <ion-item (click)="leave(true)">End Combat 🎇</ion-item>
+    </div>
 
 </div>
 

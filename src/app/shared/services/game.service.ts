@@ -167,9 +167,9 @@ export class GameService {
     result =  this.game.find(story=>story.id == id);
     if(!result) return  {
       "id": 0,
-      "title": "Empty Story Block",
-      "pathway": "A blank moment in Darryn's journey.",
-      "description": "This block is intentionally left blank for future use.",
+      "title": "Embark on an Epic Adventure with Darryn!",
+      "pathway": "Start weaving your own threads",
+      "description": "Step into a richly woven tale of mystery, danger, and choice in a fractured world where every decision shapes your destiny. As Darryn, a rogue with a forgotten legacy, you’ll navigate ancient ruins, battle fearsome foes, and uncover powerful relics. Forge your path through gripping combat, strategic exploration, and moral dilemmas. Will you restore balance, wield ultimate power, or succumb to the shadows? The fate of the realm is in your hands. Adventure awaits—dare to answer the call!",
       "items": [],
       "options": [{
         "name": "start",
@@ -177,7 +177,7 @@ export class GameService {
         "collectedItems": [],
         "targetStoryBlock": 1
       },]
-    }
+    };
     this.gameState.currentStory = result.id;
     this.saveGameState();
     return result;

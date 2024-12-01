@@ -12,6 +12,7 @@ export class InventoryPage implements OnInit {
   constructor(private gameService: GameService) { }
 
   ngOnInit() {
+    this.inventory = this.gameService.getCurrentInventory();
     this.gameService.getInventory().subscribe((inventory) => {
       this.inventory = inventory;
       
