@@ -25,6 +25,7 @@ export class CombatComponent implements OnInit {
  // 20 min kiss
   combatBlock?: ICombat;
   player: any = null;
+  playerTotalHealth: number = 100;
   playerDescription: string = "Darryn is a lithe, wiry figure, their movements imbued with the ease and precision of someone accustomed to living in the shadows. They wear a fitted, dark leather tunic reinforced with subtle, overlapping scales for protection without sacrificing agility. A hood, often drawn low, casts a shadow over sharp features—cheekbones high and prominent, framing a pair of keen, observant eyes that glint like shards of polished steel. Their skin bears the faint, sun-kissed tone of someone often outdoors yet cloaked in shadow. A small collection of scars—a nick on the brow, a faint line across one hand—suggests experience rather than recklessness. At their side, a pair of daggers rest in worn leather sheaths, the hilts wrapped in strips of dark cloth for a surer grip. A weathered pouch hangs from their belt, hinting at hidden supplies, and their boots, soft-soled and expertly worn-in, make no sound even on the roughest ground. A faint air of mystery surrounds Darryn, their gaze a blend of guarded intensity and an almost restless curiosity, as though they are constantly calculating the next move.";
   inventory: any[] = [];
   weapons: any[] = [];
@@ -73,6 +74,7 @@ export class CombatComponent implements OnInit {
       console.error('The dice container element is missing!');
       return;
     }
+    
 
     // Initialize the DiceBox with the DOM element
     this.diceBox = new DiceBox({
@@ -83,6 +85,7 @@ export class CombatComponent implements OnInit {
     await this.diceBox.init();
 
     this.player = this.gameService.getPlayer();
+    this.playerTotalHealth = this.player.health;
     this.player.currentHealth = this.player.health;
     this.inventory = this.gameService.getCurrentInventory();
     if(this.combatBlock?.enemies)  this.enemies = this.combatBlock?.enemies;
@@ -147,7 +150,7 @@ export class CombatComponent implements OnInit {
                       currentEnemy.name,
                       currentEnemy.description,
                       false,
-                      this.player.health
+                      this.player.health/ this.playerTotalHealth
                   ),
                   topLoadedText
               );
@@ -193,6 +196,7 @@ export class CombatComponent implements OnInit {
       
       for (let i = 0; i <this.enemies.length; i++) {
         let enemyInitiative = this.randomIntFromInterval(1, 20);
+        this.enemies[i].currentHealth = this.enemies[i].health;
         rollResults.push({isPlayer: false, enemyid:this.enemies[i].id, roll:enemyInitiative})
       }
 
@@ -240,7 +244,7 @@ export class CombatComponent implements OnInit {
         let finishing = false;
         if (this.activeTarget?.description !== undefined)
           targetDescription = `${this.activeTarget.name} - ${this.activeTarget.description}`;
-      console.log(targetDescription);
+          console.log(targetDescription);
         // Determine if the roll hits
         if (this.activeTarget && rollResult >= this.activeTarget.AC) {
             await this.typeText(`Hit! (Rolled: ${DiceResult[0].value} + ${item.bonus} = ${rollResult})`, topLoadedText);
@@ -306,10 +310,16 @@ export class CombatComponent implements OnInit {
                           const userDescription = killDescriptionAlert.data?.values?.[0];
                           this.loadedText[topLoadedText] =(userDescription);
               
-                          let result = await this.openAIService.killingResponse(userDescription);
+                          let result = await this.openAIService.killingResponse(userDescription, targetDescription);
                           await this.typeText(result, topLoadedText, true);
                       });
-                      }  
+                      } else{
+                          if(this.activeTarget?.currentHealth){
+                            let result = await this.openAIService.generateAttack(item.description, this.activeTarget?.name, this.activeTarget?.description, false, (this.activeTarget?.currentHealth/this.activeTarget?.health));
+                            await this.typeText(result, topLoadedText, true);
+                          }
+                         
+                      }
 
 
                       // If the blow was a killing bow, request description, remove the enemy from both the initiative and enemies list
@@ -330,19 +340,20 @@ export class CombatComponent implements OnInit {
             // Handle miss case
             await this.typeText(`Miss! (Rolled: ${DiceResult[0].value} + ${item.bonus} = ${rollResult})`, topLoadedText);
             failed = true;
+            if (this.activeTarget?.currentHealth) {
+              const generatedAttack = await this.openAIService.generateAttack(
+                  item.description,
+                  this.activeTarget.name,
+                  targetDescription,
+                  failed,
+                  this.activeTarget.currentHealth / this.activeTarget.health
+              );
+              await this.typeText(generatedAttack, topLoadedText, true);
+          }
         }
 
 
-        if (this.activeTarget?.currentHealth && !finishing) {
-            const generatedAttack = await this.openAIService.generateAttack(
-                item.description,
-                this.activeTarget.name,
-                targetDescription,
-                failed,
-                this.activeTarget.currentHealth / this.activeTarget.health
-            );
-            await this.typeText(generatedAttack, topLoadedText, true);
-        }
+        
        
 
         this.diceBox.clear();
