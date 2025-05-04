@@ -53,53 +53,12 @@ export class GameService {
               currentStory: 0,
               inventory: [
                 {
-                  "id": 1,
-                  "name": "Iron Dagger",
-                  "description": "A standard iron dagger, durable and practical. Its blade is well-balanced, suitable for quick strikes and close combat.",
-                  "image": "🔪",
-                  "bonuses": [],
-                  "damage": "30d6",
-                  "bonus": 20,
-                  "isWeapon": true,
-                  "type":"dex"
-                },
-                {
-                  "id": 2,
-                  "name": "Rusty Blade",
-                  "description": "An old, slightly corroded dagger. Its edge is worn, but it can still deal a respectable cut in a pinch.",
-                  "image": "🪓",
-                  "bonuses": [],
-                  "damage": "2d8",
-                  "bonus": 0,
-                  "isWeapon": true
-                },
-                {
-                  "id": 3,
-                  "name": "Steel Stiletto",
-                  "description": "A slim, sharp dagger forged from steel, designed for piercing armor and precision strikes.",
-                  "image": "🗡️",
-                  "bonuses": [{ "name": "Armor Penetration", "bonus": 1 }],
-                  "damage": "d6+3",
-                  "bonus": 1,
-                  "isWeapon": true
-                },
-                {
                   "id": 4,
                   "name": "Balanced Dagger",
                   "description": "A well-balanced dagger, ideal for throwing. Its aerodynamic design allows for controlled and accurate throws.",
                   "image": "🔪",
                   "bonuses": [{ "name": "Throwing Accuracy", "bonus": 1 }],
-                  "damage": 3,
-                  "bonus": 0,
-                  "isWeapon": true
-                },
-                {
-                  "id": 5,
-                  "name": "Shortblade",
-                  "description": "A compact dagger, easy to conceal and quick to draw. Useful for stealthy attacks and close quarters.",
-                  "image": "🗡️",
-                  "bonuses": [{ "name": "Stealth Bonus", "bonus": 1 }],
-                  "damage": 3,
+                  "damage": "2d8 + 2",
                   "bonus": 0,
                   "isWeapon": true
                 },
@@ -109,8 +68,8 @@ export class GameService {
                   "name": "Derringer",
                   "description": " A small, finely crafted hand crossbow designed for quick and stealthy use. Its darkwood frame is reinforced with polished steel, and the grip bears faint arcane runes that shimmer in low light. It can fire specially crafted bolts up to 30 feet with surprising precision. While not as powerful as a standard crossbow, its portability and ease of concealment make it a favorite among rogues and spies.",
                   "image": "🔫",
-                  "bonuses": [{ "name": "Stealth Bonus", "bonus": 1 }],
-                  "damage": 3,
+                  "bonuses": [{ "name": "dex", "bonus": 1 }],
+                  "damage": "3d4",
                   "bonus": 0,
                   "isWeapon": true
                 }

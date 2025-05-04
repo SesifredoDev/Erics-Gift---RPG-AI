@@ -42391,6 +42391,11 @@
         "name": "Continue Journey (If Success / Minor Delay)",
         "description": "Proceed towards Oakhaven.",
         "collectedItems": [],
+        "require":{
+          "type":"dex",
+          "fail": false,
+          "boundry":14
+        },
         "targetStoryBlock": 995
       },
       {
