@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title> Game</ion-title>
     <ion-buttons slot="end">
-      <ion-button color="secondary" (click)="resetGame()"><ion-icon name="refresh-outline" slot="start"></ion-icon> Reset</ion-button>
+      <ion-button fill="clear" class="glow-hover" (click)="resetGame()"><ion-icon name="refresh-outline" slot="start"></ion-icon> Reset</ion-button>
     </ion-buttons>
   </ion-toolbar>
   
@@ -14,11 +14,8 @@
       <ion-title size="large">home</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-card>
+  <ion-card class="flicker-effect">
     <ion-card-header>
-      <ion-card-subtitle>
-        {{storyBlock.pathway}}
-      </ion-card-subtitle>
       <ion-card-title>
         {{storyBlock.title}}
       </ion-card-title>
@@ -26,15 +23,19 @@
     <ion-card-content>
       {{displayedText}} <!-- Use displayedText for typing effect -->
       <br>
-      <ion-button fill="outline" (click)="speedup()">Skip >></ion-button>
+      <ion-button fill="clear" (click)="speedup()">Skip >></ion-button>
     </ion-card-content>
   </ion-card>
 
   <!-- Options  -->
    <div *ngIf="!storyBlock.isCombat">
-      <ion-item *ngFor="let option of storyBlock.options" (click)="onOptionSelected(option.targetStoryBlock)">
-        {{option.name}} - {{option.description}}
-      </ion-item>
+      <ng-container  *ngFor="let option of storyBlock.options">
+        <ion-item  *ngIf="optionAvailable(option)" (click)="onOptionSelected(option)">
+          {{option.name}} - {{option.description}}
+        </ion-item>
+
+      </ng-container>
+      
    </div>
    <div *ngIf="storyBlock.isCombat">
       <ion-item (click)="openCombat(storyBlock);"> Start Combat ⚔️</ion-item>

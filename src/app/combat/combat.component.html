@@ -1,72 +1,91 @@
-
-<div class="combat-container" #diceContainer id="diceContainer">
-    
-    <ion-card class="player-info">
+<div class="combat-wrapper combat-box-animated-border"  #diceContainer id="diceContainer">
+    <!-- Player Info Sidebar -->
+    <section class="player-info-card">
+      <ion-card>
+        <ion-card-header>
+          <img src="assets/darryn.png" alt="Player Avatar" />
+        </ion-card-header>
         <ion-card-content>
-            <img src="assets/darryn.png" alt="">
-            
-            <p>Health: {{player?.currentHealth}}</p>
-            <p>AC: {{player?.AC}}</p>
-            <p>STR: {{player?.strength}}</p>
-            
-            <p>CON: {{player?.constitution}}</p>
-            
-            <p>DEX: {{player?.dexterity}}</p>
-            
-            <p>INT: {{player?.intelligence}}</p>
-            
-            <p>WIS: {{player?.wisdom}}</p>
-            
-            <p>CHA: {{player?.charisma}}</p>
-            
+          <p>Health: {{ player?.currentHealth }}</p>
+          <p>AC: {{ player?.AC }}</p>
+          <p>STR: {{ player?.strength }}</p>
+          <p>DEX: {{ player?.dexterity }}</p>
+          <p>CON: {{ player?.constitution }}</p>
+          <p>INT: {{ player?.intelligence }}</p>
+          <p>WIS: {{ player?.wisdom }}</p>
+          <p>CHA: {{ player?.charisma }}</p>
         </ion-card-content>
-    </ion-card>
-    <ion-card class="combat-details"   >
-        <ion-card-content #combatDetailsElement  >
-            <div class="description-block">
-                <div *ngFor="let item of loadedText.slice().reverse()">
-                    <p>> {{item}}</p>
-                    <br />
-                </div>
+      </ion-card>
+    </section>
+  
+    <!-- Combat Log Section -->
+    <section class="combat-log">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Combat Log</ion-card-title>
+        </ion-card-header>
+        <ion-card-content #combatDetailsElement>
+          <div class="log-scroll">
+            <div *ngFor="let item of loadedText.slice().reverse()">
+              <p>> {{ item }}</p>
             </div>
-            
-             
+          </div>
         </ion-card-content>
-    </ion-card>
-</div>
-<div class="option-container">
-    <div class="main-options">
+      </ion-card>
+    </section>
+  
+    <!-- Action Section -->
+    <section class="combat-actions">
+      <div class="main-actions">
         <ion-item *ngIf="touchy" (click)="getAttacks()">Attack</ion-item>
-        <ion-item *ngIf="touchy" (click)="getInventory()">Inventory</ion-item>
-        <ion-item  (click)="speedup()">Skip >></ion-item>
-        <p>Right click weapons to see their attributes</p>    
-    </div>
-    <!-- Enemies -->
-    <div class="sub-options"  *ngIf="stage==='nextTurn'" >
-        
-        <ion-item (click)="nextTurn()">Next Turn</ion-item>
-    </div>
-    <div class="sub-options"  *ngIf="touchy && stage==='attackTarget'" >
-        
-        <ion-item (click)="selectTarget(option)" *ngFor="let option of enemies">{{option.name}}</ion-item>
-    </div>
-    
-    <div class="sub-options"  *ngIf="touchy && stage==='attackWeapon'" >
-        
-        <ion-item (click)="attack(option)" *ngFor="let option of weapons" [id]="'hover-trigger-'+option.name">{{option.image}} -{{option.name}}</ion-item>
-        <ion-popover  *ngFor="let option of weapons" [trigger]="'hover-trigger-'+option.name" triggerAction="context-menu">
+        <ion-item (click)="speedup()">Skip >></ion-item>
+      </div>
+  
+      <!-- Sub Options -->
+      <div class="sub-actions">
+        <div class="sub-options" *ngIf="stage === 'nextTurn'">
+          <ion-item (click)="nextTurn()">Next Turn</ion-item>
+        </div>
+  
+        <div class="sub-options" *ngIf="touchy && stage === 'attackTarget'">
+          <ion-item *ngFor="let option of enemies" (click)="selectTarget(option)">
+            {{ option.name }}
+          </ion-item>
+        </div>
+  
+        <div class="sub-options" *ngIf="touchy && stage === 'attackWeapon'">
+          <ion-item
+            *ngFor="let option of weapons"
+            (click)="attack(option)"
+            [id]="'hover-trigger-' + option.name"
+          >
+            {{ option.image }} - {{ option.name }}
+          </ion-item>
+  
+          <ion-popover
+            *ngFor="let option of weapons"
+            [trigger]="'hover-trigger-' + option.name"
+            triggerAction="context-menu"
+          >
             <ng-template>
-              <ion-content class="ion-padding">Damage {{option.damage}}, Attack Bonus: {{option.bonus}}</ion-content>
+              <ion-content class="ion-padding">
+                Damage: {{ option.damage }}<br />
+                Attack Bonus: {{ option.bonus }}
+              </ion-content>
             </ng-template>
           </ion-popover>
-    </div>
-
-    <div class="sub-options" *ngIf="initiative.length === 0">
-        <ion-item (click)="rollInitiative()">Roll For Initiative</ion-item>
-    </div>
-    <div class="sub-options" *ngIf="enemies.length === 0">
-        <ion-item (click)="leave(true)">End Combat 🎇</ion-item>
-    </div>
-
-</div>
-
+        </div>
+  
+        <div class="sub-options" *ngIf="initiative.length === 0">
+          <ion-item (click)="rollInitiative()">Roll For Initiative</ion-item>
+        </div>
+  
+        <div class="sub-options" *ngIf="enemies.length === 0">
+          <ion-item (click)="leave(true)">End Combat 🎇</ion-item>
+        </div>
+      </div>
+  
+      <p class="hint-text">Right-click weapons to see their attributes.</p>
+    </section>
+  </div>
+  

@@ -14,4 +14,9 @@ export interface IOption{
 	description: string; //short description;
     collectedItems?: IItem[];
 	targetStoryBlock: number; //Target IStoryBlock or ICombat
+	require?:{
+		type: 'str' | 'con' | 'dex'  | 'int'  |  'wis'  | 'cha';
+		fail: boolean;
+		boundry: number;
+	}
 } 

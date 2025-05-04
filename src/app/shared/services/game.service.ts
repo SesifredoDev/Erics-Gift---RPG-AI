@@ -12,6 +12,8 @@ export class GameService {
   game: IStory[] =  [];
   items: IItem[] = [];
 
+  rolls: {statType:string, roll:number}[]  =  [];
+
   inventory: Subject<IItem[]> = new Subject;
 
   defaultPlayerStats= {
@@ -58,7 +60,8 @@ export class GameService {
                   "bonuses": [],
                   "damage": "30d6",
                   "bonus": 20,
-                  "isWeapon": true
+                  "isWeapon": true,
+                  "type":"dex"
                 },
                 {
                   "id": 2,
@@ -194,6 +197,11 @@ export class GameService {
     this.inventory.next([]);
     this.game = [];
     this.items = [];
+    this.loadNextScene(0);
+  }
+
+  addStatRoll(result: number, type: string  ){
+    this.rolls.push({statType: type, roll: result});
   }
 
 

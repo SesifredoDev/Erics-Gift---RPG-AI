@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, viewChild } from '@angular/core';
 import { GameService } from '../shared/services/game.service';
 import { IOption, IStory } from '../shared/modals/story.modal';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { ICombat } from '../shared/modals/combat.modal';
 import { CombatComponent } from '../combat/combat.component';
+import { IItem } from '../shared/modals/item.modal';
 
 
 @Component({
@@ -29,9 +30,9 @@ export class HomePage implements OnInit {
   };
 
   displayedText: string = ''; // Variable to store the displayed text
-  typingSpeed: number = 15; // Speed of typing in milliseconds
+  typingSpeed: number = 0; // Speed of typing in milliseconds
 
-  constructor(private gameService: GameService, public modalController: ModalController, public alertController: AlertController) { }
+  constructor(private gameService: GameService, public modalController: ModalController, public alertController: AlertController, private toastController: ToastController) { }
 
   async ngOnInit() {
     await this.gameService.intialiseGame(); // Initialise the game state if not already done
@@ -62,13 +63,47 @@ export class HomePage implements OnInit {
     
   }
 
-  onOptionSelected(option: number) {
+   onOptionSelected(option: IOption) {
     if(this.activateOptions){
-      let newScene: any =  this.gameService.loadNextScene(option);
+      option.collectedItems?.forEach(async (e:IItem)=>{
+        this.gameService.addItem(e);
+        const toast = await this.toastController.create({
+          message: `Added ${e.name} to your inventory`, 
+          duration: 1500,
+          position:'bottom',
+          color:'green',
+          cssClass: ".itemAdded"
+        });
+
+        console.log("Collected "+ e.name)
+    
+        await toast.present();
+      })
+      this.gameService.rolls = [];
+      let newScene: any =  this.gameService.loadNextScene(option.targetStoryBlock);
       this.storyBlock = newScene;
       this.showStoryBlock(this.storyBlock); // Trigger typing animation for the new story block
     }
     
+  }
+
+  optionAvailable(option: IOption): boolean{
+    let result = false;
+    if(option.require){
+      this.gameService.rolls.forEach((e)=>{
+        if(e.statType == option.require?.type){
+          if(option.require.fail  == true  &&  e.roll  < option.require.boundry){
+            result = true;
+          }else if(option.require.fail  == false  &&  e.roll  >= option.require.boundry){
+            result = true;
+          }
+        }
+      })
+    }else{
+      result = true;
+    }
+    
+    return result;
   }
 
   async openCombat(combatBlock: ICombat){
@@ -96,7 +131,7 @@ export class HomePage implements OnInit {
     await alert.present();
 
     await alert.onDidDismiss().then(async (killDescriptionAlert: any) => {
-      this.onOptionSelected(result.targetStoryBlock);
+      this.onOptionSelected(result);
     })
 
 

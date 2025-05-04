@@ -17,16 +17,68 @@
       <ion-card-title>Darryn</ion-card-title>
     </ion-card-header>
   </ion-card>
+  <ion-card class="inventory-card stats-card"   #diceContainer id="diceContainer">
+    <ion-grid class="inventory-grid">
+      <ion-row size="6" justify-content-center>
+        <ion-col class="stat-slot" (click)="rollStat(player.strength , 'str')">
+          <div class="item-content">
+            STR: {{player.strength}}
+            <p>+{{getModifier(player.strength)}}</p>
+          </div>
+        </ion-col>
+        <ion-col class="stat-slot" (click)="rollStat(player.dexterity , 'dex')">
+          <div class="item-content">
+            DEX: {{player.dexterity}}
+            <p>+{{getModifier(player.dexterity )}}</p>
+          </div>
+        </ion-col>
+        <ion-col class="stat-slot"   (click)="rollStat(player.constitution , 'con')">
+          <div class="item-content">
+            CON: {{player.constitution}}
+            <p>+{{getModifier((player.constitution))}}</p>
+          </div>
+        </ion-col>
+        <ion-col class="stat-slot"  (click)="rollStat(player.wisdom , 'wis')">
+          <div class="item-content">
+            WIS: {{player.wisdom}}
+            <p>+{{getModifier(player.wisdom)}}</p>
+          </div>
+        </ion-col>
+        <ion-col class="stat-slot" (click)="rollStat(player.intelligence , 'int')">
+          <div class="item-content">
+          INT: {{player.intelligence}}
+          <p>+{{getModifier(player.intelligence)}}</p>
+        </div>
+        </ion-col>
+        <ion-col class="stat-slot"  (click)="rollStat(player.charisma , 'cha')">
+          <div class="item-content">
+          CHA: {{player.charisma}}
+          <p>+{{getModifier(player.charisma)}}</p>
+        </div>
+        </ion-col>
+        <!-- Add more rows as needed -->
+      </ion-row>
+
+    </ion-grid>
+  </ion-card>
   <ion-card class="inventory-card">
     <ion-grid class="inventory-grid">
       <ion-row>
         <ion-col size-lg="1" size-md="1" size-sm="2" size="3" class="item-slot" *ngFor="let item of inventory">
-            <div class="item-content">{{item.image}}</div>
+          <div class="item-content" [id]="item.id">{{item.image}}</div>
+          <ion-popover [trigger]="item.id" triggerAction="hover">
+            <ng-template>
+              <ion-card class="ion-padding inventory-card">
+                <strong>{{ item.name }}</strong><br />
+                {{ item.description }} <br><br>
+                <p>{{item.damage}} <span *ngIf="item.type">{{item.type}}</span></p>
+              </ion-card>
+            </ng-template>
+          </ion-popover>
         </ion-col>
-      <!-- Add more rows as needed -->
+        <!-- Add more rows as needed -->
       </ion-row>
-        
+
     </ion-grid>
   </ion-card>
 </ion-content>
-

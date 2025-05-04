@@ -1,109 +1,193 @@
-*{
-    color: white;
-    
-}
-.combat-modal{
-    --width: 80vw;
+.combat-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  height: 100%;
+  border-radius: 10px;
+  padding: 1rem;
+  border: 10px solid silver;
+
+  @media screen and (max-width: 768px) and (orientation: portrait) {
+    flex-direction: column;
+    padding: 0.5rem;
+    gap: 0.75rem;
   }
-    
-pre{
-    font-size: 0.05rem;
 }
-img{
-    height: 30%;
+
+.player-info-card {
+  flex: 0 0 20%;
+  min-width: 220px;
+
+  ion-card {
+    height: 100%;
+    text-align: center;
+
+    img {
+      width: 80%;
+      margin: 1rem auto;
+    }
+
+    p {
+      margin: 0.3rem 0;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+  }
+
+  @media screen and (max-width: 768px) and (orientation: portrait) {
+    flex: none;
+    width: 100%;
+    ion-card {
+      img {
+        width: 50%;
+      }
+    }
+  }
 }
-.combat-container{
+
+.combat-log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  ion-card {
+    height: 100%;
     display: flex;
-    height: 70%;
-    margin: auto;
+    flex-direction: column;
+  }
 
+  .log-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    max-height: 300px;
+  }
+
+  p {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media screen and (max-width: 768px) and (orientation: portrait) {
+    width: 100%;
+    .log-scroll {
+      max-height: 200px;
+    }
+  }
 }
 
-.combat-container ion-card{
-    height: 100%;
-}
+.combat-actions {
+  flex: 0 0 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1rem;
 
-.player-info{
-    width: 20%;
-}
-.player-info *{
-    
-    color: black;
-    font-weight: bolder;
-}
-.combat-details{
-    width: 75%;
-    height: 100%;
-    margin-left: 10px;
-    background-color: #121212;
-    font-size: small;
-    overflow-y: scroll;
-}
-.description-block{
-    height: 100%;
-}
-p{
-    font-size: 0.77rem;
-}
-.option-container{
-    height: 30%;
+  .main-actions,
+  .sub-options {
     display: flex;
-    justify-content: space-between;
-    padding: 10px;
-}
-.sub-options{
-    display: ruby;
-    width: 80%;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    ion-item {
+      --ion-item-background: #cccccc44;
+      border: 1px solid white;
+      border-radius: 10px;
+      font-weight: bold;
+      color: black;
+      text-align: center;
+      font-size: 1rem;
+    }
+  }
+
+  .hint-text {
+    font-size: 0.75rem;
+    color: #eee;
+    margin-top: 0.5rem;
+    font-style: italic;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 768px) and (orientation: portrait) {
+    width: 100%;
+    .main-actions,
+    .sub-options {
+      ion-item {
+        font-size: 1.1rem;
+        padding: 1rem;
+      }
+    }
+  }
 }
 
-.sub-options *{
-    height: min-content;
-    width: 30%;
-    margin: 2.5px;
-}
-@media screen and (max-width: 768px){
-    .sub-options *{
-        width: 45%;
+
+.combat-log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  ion-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 1px;
+    border-radius: 12px;
+    overflow: hidden;
+
+    // Animated border effect
+    &::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(
+        135deg,
+        #35002a,
+        #00270a,
+        #0c0c0c,
+        #410034,
+        #0c0c0c,
+      );
+      background-size: 400% 400%;
+      animation: borderAnimation 8s ease infinite;
+      z-index: 0;
+      border-radius: 14px;
     }
+
+    // Content stays on top
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  .log-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    max-height: 300px;
+  }
+
+  @media screen and (max-width: 768px) and (orientation: portrait) {
+    width: 100%;
+    .log-scroll {
+      max-height: 200px;
+    }
+  }
 }
 
-@media screen and (max-width: 425px) {
-    .combat-container{
-        display: flex;
-        flex-direction: column;
-    }
-    .combat-container ion-card{
-        height: min-content;
-    }
-    
-    .player-info{
-        width: auto;
-        display: flex;
-        
-    }
-    .player-info ion-card-content p{
-        margin: 5%;
-    } 
-    .player-info ion-card-content{
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        font-size: small;
-        justify-content: flex-start;
-        margin: 0px;
-        padding: 0px;
-        height: min-content;
-    }
-    
-    .combat-details{
-        height: 70% !important;
-        width: unset;
-    }
-    .player-info *{
-        margin: auto;
-    }
-    img{
-        width: 30vw;
-        height: 30%;
-    }
+// Animation keyframes
+@keyframes borderAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

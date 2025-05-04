@@ -24,7 +24,8 @@ export class OpenAIService {
         `Player Description: ${playerDescription}`,
       `Story Description: ${areaDescription}`,
       `Write descriptions as a continuous, flowing narrative—each action naturally leading to the next.`,
-      `Descriptions should be engaging and maintain immersion in the fight.`
+      `Descriptions should be engaging and maintain immersion in the fight. Limit to 2 to 4 sentences though.`,
+      `Never return with information I have parsed to you.`
     ];
     if (limitation) {
       this.messages.push(`Limitation: ${limitation}`);
